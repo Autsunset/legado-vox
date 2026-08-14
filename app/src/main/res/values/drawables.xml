@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Dynamic pointers -->
+    <drawable name="artist_art">@drawable/ic_groups</drawable>
+    <drawable name="pause_anim">@drawable/ic_media_pause_anim</drawable>
+    <drawable name="play_anim">@drawable/ic_media_play_anim</drawable>
+
+    <!-- Media3 -->
+    <drawable name="media3_notification_play" tools:keep="@drawable/media3_notification_play">
+        @drawable/ic_play_filled
+    </drawable>
+    <drawable name="media3_notification_pause" tools:keep="@drawable/media3_notification_pause">
+        @drawable/ic_pause_filled
+    </drawable>
+</resources>

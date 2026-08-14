@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="?attr/actionBarStyle"
+        app:contentInsetStartWithNavigation="0dp"
+        app:displayHomeAsUp="false"
+        app:fitStatusBar="false" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/refresh_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:waveAmplitude="2dp"
+        app:wavelength="32dp"
+        app:waveSpeed="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/tool_bar" />
+
+    <LinearLayout
+        android:id="@+id/ll_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            app:cardBackgroundColor="?attr/colorTertiaryContainer"
+            app:cardCornerRadius="4dp"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:id="@+id/tv_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="@string/text"
+                android:textColor="?attr/colorTertiary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:ignore="SmallSp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:scaleType="centerCrop"
+            app:cardBackgroundColor="?attr/colorPrimary"
+            app:cardCornerRadius="4dp"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:id="@+id/tv_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="@string/text"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:ignore="SmallSp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <io.legado.app.ui.widget.EmptyMessageView
+        android:id="@+id/tv_empty_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        app:messageText="还没有源！"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <LinearLayout
+        android:id="@+id/ll_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/tv_dur"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="@string/text"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButtonGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_top"
+                style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/go_to_top"
+                android:tooltipText="@string/go_to_top"
+                app:icon="@drawable/ic_arrow_drop_up"
+                app:iconGravity="textStart"
+                tools:ignore="UnusedAttribute" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_bottom"
+                style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/go_to_bottom"
+                android:tooltipText="@string/go_to_bottom"
+                app:icon="@drawable/ic_arrow_drop_down"
+                app:iconGravity="textStart"
+                tools:ignore="UnusedAttribute" />
+        </com.google.android.material.button.MaterialButtonGroup>
+
+    </LinearLayout>
+
+</LinearLayout>

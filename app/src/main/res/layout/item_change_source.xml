@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_good"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="2dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/like_source"
+        android:src="@drawable/ic_praise"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:tint="?attr/colorPrimary" />
+
+    <!-- 最新章节 -->
+    <TextView
+        android:id="@+id/tv_last"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?attr/colorSecondary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/tv_author"
+        app:layout_constraintStart_toEndOf="@id/iv_good"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="latest chapter name" />
+
+    <!-- 作者 -->
+    <TextView
+        android:id="@+id/tv_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxWidth="160dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_last"
+        app:layout_constraintEnd_toStartOf="@id/iv_checked"
+        tools:text="author" />
+
+    <!-- 来源 -->
+    <TextView
+        android:id="@+id/tv_origin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/iv_good"
+        app:layout_constraintTop_toBottomOf="@id/tv_last"
+        app:layout_constraintEnd_toStartOf="@id/tv_author"
+        tools:text="bookSourceName" />
+
+    <!-- 字数 -->
+    <TextView
+        android:id="@+id/tv_current_chapter_word_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/tv_respond_time"
+        app:layout_constraintStart_toEndOf="@id/iv_good"
+        app:layout_constraintTop_toBottomOf="@id/tv_origin"
+        tools:text="word count" />
+
+    <!-- 响应时间 -->
+    <TextView
+        android:id="@+id/tv_respond_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="12dp"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_current_chapter_word_count"
+        app:layout_constraintEnd_toStartOf="@id/iv_checked"
+        app:layout_constraintStart_toEndOf="@id/tv_current_chapter_word_count"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="respond time" />
+
+    <!-- 选中状态 -->
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_checked"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="2dp"
+        android:src="@drawable/ic_check"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

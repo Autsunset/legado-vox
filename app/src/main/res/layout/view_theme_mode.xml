@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/theme_toggle_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:spacing="2dp"
+    app:innerCornerSize="8dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:singleSelection="true"
+    app:selectionRequired="true">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_system"
+        style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+        app:checkedIcon="@drawable/ic_check"
+        android:checkable="true"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/flow_sys" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_light"
+        style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+        app:checkedIcon="@drawable/ic_check"
+        android:checkable="true"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/light_mode" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_dark"
+        style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+        app:checkedIcon="@drawable/ic_check"
+        android:checkable="true"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/dark_mode" />
+</com.google.android.material.button.MaterialButtonToggleGroup>

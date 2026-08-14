@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="true"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="UnusedAttribute">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cd_cover"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="6dp"
+            app:strokeWidth="0dp"
+            android:layout_margin="8dp"
+            android:transitionName="img_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_cover"
+                android:layout_width="55dp"
+                android:layout_height="77dp">
+
+                <io.legado.app.ui.widget.image.CoverImageView
+                    android:id="@+id/iv_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_cover_default"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="ImageContrastCheck" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/rl_loading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="4dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:indeterminate="true"
+                    android:visibility="invisible"
+                    android:layout_gravity="top"
+                    app:layout_constraintTop_toTopOf="@id/iv_cover"
+                    app:layout_constraintStart_toStartOf="@id/iv_cover"
+                    app:layout_constraintEnd_toEndOf="@id/iv_cover" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cd_unread"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="4dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.circularreveal.cardview.CircularRevealCardView
+                            android:id="@+id/new_chapter"
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
+                            android:visibility="gone"
+                            android:layout_marginStart="6dp"
+                            app:strokeWidth="0dp"
+                            app:cardBackgroundColor="?attr/colorSecondaryContainer" />
+
+                        <TextView
+                            android:id="@+id/tv_unread"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/colorOnSecondary"
+                            android:textSize="9sp"
+                            android:padding="4dp"
+                            android:textStyle="bold"
+                            android:includeFontPadding="false"
+                            tools:text="5"
+                            tools:ignore="SmallSp" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cd_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="4dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryVariant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/tv_tip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/colorOnSecondary"
+                        android:textSize="8sp"
+                        android:padding="3dp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        tools:text="5"
+                        tools:ignore="SmallSp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="8dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cd_cover"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:scrollbars="none"
+                android:singleLine="true"
+                android:text="@string/book_name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded,RtlSymmetry"
+                app:layout_constraintStart_toEndOf="@+id/cd_cover"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cd_cover" />
+
+            <TextView
+                android:id="@+id/tv_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:maxLines="1"
+                android:scrollbars="none"
+                android:singleLine="true"
+                android:text="@string/author_read"
+                android:textSize="13sp"
+                tools:ignore="RtlSymmetry,TextContrastCheck"
+                app:layout_constraintStart_toEndOf="@+id/iv_author"
+                app:layout_constraintBottom_toTopOf="@+id/iv_author"
+                app:layout_constraintTop_toBottomOf="@+id/iv_author" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_last_update_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="4dp"
+                    android:maxLines="1"
+                    android:scrollbars="none"
+                    android:singleLine="true"
+                    android:text="@string/text"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorSecondary" />
+
+                <TextView
+                    android:id="@+id/tv_last"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scrollbars="none"
+                    android:singleLine="true"
+                    android:text="@string/lasted_show"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

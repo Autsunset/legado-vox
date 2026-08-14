@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="book_type">
+        <item>文本</item>
+        <item>音频</item>
+        <item>图片</item>
+        <item>文件</item>
+    </string-array>
+
+    <string-array name="layout_type">
+        <item>列表</item>
+        <item>单列</item>
+        <item>双列</item>
+        <item>瀑布</item>
+        <item>三列</item>
+    </string-array>
+
+    <string-array name="rss_type">
+        <item>网页</item>
+        <item>图片</item>
+        <item>视频</item>
+    </string-array>
+
+    <string-array name="group_style">
+        <item>标签</item>
+        <item>隐藏标签</item>
+        <item>文件夹</item>
+    </string-array>
+
+    <string-array name="text_suffix">
+        <item>.txt</item>
+        <item>.json</item>
+        <item>.xml</item>
+    </string-array>
+
+    <string-array name="theme_mode">
+        <item>跟随系统</item>
+        <item>亮色主题</item>
+        <item>暗色主题</item>
+    </string-array>
+
+    <string-array name="double_page_title">
+        <item>全局单页</item>
+        <item>全局双页</item>
+        <item>横屏双页</item>
+        <item>平板/横屏双页</item>
+    </string-array>
+
+    <string-array name="NavBarColors">
+        <item>自动</item>
+        <item>黑色</item>
+        <item>白色</item>
+        <item>跟随背景</item>
+    </string-array>
+
+    <string-array name="screen_time_out">
+        <item>默认</item>
+        <item>1分钟</item>
+        <item>5分钟</item>
+        <item>10分钟</item>
+        <item>常亮</item>
+    </string-array>
+
+    <string-array name="icon_names">
+        <item>iconMain</item>
+        <item>iconWhite</item>
+        <item>icon0</item>
+        <item>icon1</item>
+        <item>icon2</item>
+        <item>icon3</item>
+        <item>icon4</item>
+        <item>icon5</item>
+        <item>icon6</item>
+    </string-array>
+
+    <string-array name="chinese_mode">
+        <item>关闭简繁转换</item>
+        <item>繁体转简体</item>
+        <item>简体转繁体</item>
+    </string-array>
+
+    <string-array name="system_typefaces">
+        <item>系统默认字体</item>
+        <item>系统衬线字体</item>
+        <item>系统等宽字体</item>
+    </string-array>
+
+    <string-array name="read_tip">
+        <item>无</item>
+        <item>书名</item>
+        <item>标题</item>
+        <item>带箭头的标题(使用系统字体)</item>
+        <item>带箭头的标题</item>
+        <item>时间</item>
+        <item>电量</item>
+        <item>经典电量</item>
+        <item>电量内显</item>
+        <item>仅电量图标</item>
+        <item>电量%</item>
+        <item>页数</item>
+        <item>进度(%)</item>
+        <item>进度(xx/yyy)</item>
+        <item>页数及进度</item>
+        <item>时间及电量</item>
+        <item>经典电量及时间</item>
+        <item>时间及电量%</item>
+        <item>全文页数</item>
+        <item>全文页数及进度</item>
+        <item>自定义</item>
+    </string-array>
+
+    <string-array name="text_font_weight">
+        <item>常规</item>
+        <item>粗体</item>
+        <item>细体</item>
+    </string-array>
+
+    <string-array name="language">
+        <item>跟随系统</item>
+        <item>简体中文</item>
+        <item>繁体中文</item>
+        <item>英文</item>
+    </string-array>
+
+    <string-array name="rule_type">
+        <item>书源</item>
+        <item>订阅源</item>
+        <item>替换规则</item>
+        <item>自动识别</item>
+    </string-array>
+
+    <string-array name="tip_color">
+        <item>跟随正文字体颜色</item>
+        <item>自定义</item>
+    </string-array>
+
+    <string-array name="tip_divider_color">
+        <item>默认</item>
+        <item>跟随内容</item>
+        <item>自定义</item>
+    </string-array>
+
+    <string-array name="bookshelf_px_array">
+        <item>@string/bookshelf_px_0</item>
+        <item>@string/bookshelf_px_1</item>
+        <item>@string/bookshelf_px_2</item>
+        <item>@string/bookshelf_px_3</item>
+        <item>@string/bookshelf_px_4</item>
+        <item>@string/bookshelf_px_5</item>
+    </string-array>
+
+    <string-array name="bookshelf_layout">
+        <item>@string/list</item>
+        <item>@string/compact_list</item>
+        <item>@string/grid</item>
+        <item>@string/compact_grid</item>
+        <item>@string/cover_grid</item>
+    </string-array>
+
+    <string-array name="themes_item">
+        <item>动态取色</item>
+        <item>草野</item>
+        <item>柠檬</item>
+        <item>黑白</item>
+        <item>电子书</item>
+        <item>晴空</item>
+        <item>八月</item>
+        <item>新浪潮</item>
+        <item>春</item>
+        <item>千禧年</item>
+        <item>隐海修会</item>
+        <item>乐队</item>
+        <item>自定义</item>
+        <item>透明</item>
+    </string-array>
+
+    <string-array name="tabletInterface">
+        <item>自动</item>
+        <item>总是</item>
+        <item>横屏时</item>
+        <item>关闭</item>
+    </string-array>
+
+    <string-array name="paletteStyle">
+        <item>柔和</item>
+        <item>中性</item>
+        <item>鲜艳</item>
+        <item>表现力</item>
+        <item>彩虹</item>
+        <item>水果拼盘</item>
+        <item>单色</item>
+        <item>仿真</item>
+        <item>内容取色</item>
+    </string-array>
+
+    <string-array name="composeEngine">
+        <item>Material Design</item>
+        <item>Miuix</item>
+    </string-array>
+
+    <string-array name="customMode">
+        <item>全局</item>
+        <item>仅强调色</item>
+    </string-array>
+
+    <string-array name="label_vis_mode" >
+        <item>自动</item>
+        <item>选中时显示</item>
+        <item>常驻</item>
+        <item>不显示</item>
+    </string-array>
+
+    <string-array name="read_slider_mode">
+        <item>常驻</item>
+        <item>不显示</item>
+    </string-array>
+
+    <string-array name="click_image_way_title">
+        <item>新版行为</item>
+        <item>预览图片</item>
+        <item>经典</item>
+        <item>禁用点击</item>
+        <item>双击</item>
+    </string-array>
+
+    <string-array name="top_bar_button_style">
+        <item>普通</item>
+        <item>填充</item>
+        <item>描边</item>
+        <item>半透明</item>
+        <item>液态玻璃</item>
+    </string-array>
+
+    <string-array name="top_bar_button_style_value">
+        <item>plain</item>
+        <item>tonal</item>
+        <item>outlined</item>
+        <item>glass</item>
+        <item>liquid</item>
+    </string-array>
+
+    <string-array name="title_bar_mode">
+        <item>在应用栏上显示</item>
+        <item>在独立行上显示</item>
+        <item>仅显示标题</item>
+        <item>不显示</item>
+    </string-array>
+
+    <string-array name="bookshelf_grid_layout">
+        <item>标准</item>
+        <item>紧凑</item>
+        <item>仅封面</item>
+    </string-array>
+
+    <string-array name="customContrast">
+        <item>默认</item>
+        <item>较强</item>
+        <item>最强</item>
+    </string-array>
+
+    <string name="all_version">所有版本</string>
+</resources>

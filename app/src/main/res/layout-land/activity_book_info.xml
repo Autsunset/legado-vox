@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/bg_book"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/bg_image"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/bg_book_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.80"
+        android:background="@drawable/bg_gradient_mask"
+        android:contentDescription="@string/bg_image" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/coll_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            style="?attr/collapsingToolbarLayoutLargeSize"
+            app:collapsedTitleTextAppearance="?attr/textAppearanceTitleLarge"
+            app:expandedTitleTextAppearance="?attr/textAppearanceHeadlineLarge"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/top_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title=" "
+                app:layout_collapseMode="pin" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:fillViewport="true"
+            android:fitsSystemWindows="false"
+            android:focusable="true"
+            android:padding="0dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="32dp"
+                    tools:ignore="RtlSymmetry">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cd_cov"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:layout_constraintDimensionRatio="5:7"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.3"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0.5"
+                        app:strokeWidth="0dp">
+
+                        <io.legado.app.ui.widget.image.CoverImageView
+                            android:id="@+id/iv_cover"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/img_cover"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/image_cover_default" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:id="@+id/tv_name"
+                        style="@style/TextAppearance.Material3.ActionBar.Title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:text="@string/book_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/cd_cov"
+                        app:layout_constraintTop_toBottomOf="@id/cd_cov" />
+
+                    <ImageView
+                        android:id="@+id/iv_name"
+                        android:layout_width="18sp"
+                        android:layout_height="18sp"
+                        android:layout_marginTop="8dp"
+                        android:contentDescription="@string/author"
+                        android:src="@drawable/ic_author"
+                        app:layout_constraintStart_toStartOf="@id/cd_cov"
+                        app:layout_constraintTop_toBottomOf="@id/tv_name"
+                        tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+                    <TextView
+                        android:id="@+id/tv_author"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@string/author"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@id/iv_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/iv_name"
+                        app:layout_constraintTop_toTopOf="@id/iv_name"
+                        tools:ignore="NestedWeights,RtlHardcoded,RtlSymmetry" />
+
+
+                    <ImageView
+                        android:id="@+id/iv_web"
+                        android:layout_width="18sp"
+                        android:layout_height="18sp"
+                        android:layout_marginTop="8dp"
+                        android:contentDescription="@string/origin_format"
+                        android:src="@drawable/ic_web_outline"
+                        app:layout_constraintStart_toStartOf="@id/cd_cov"
+                        app:layout_constraintTop_toBottomOf="@id/iv_name"
+                        tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+                    <TextView
+                        android:id="@+id/tv_origin"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@id/iv_web"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/iv_web"
+                        app:layout_constraintTop_toTopOf="@id/iv_web"
+                        tools:text="@string/origin_format" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cd_info"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="32dp"
+                    android:layout_marginVertical="16dp"
+                    android:layout_weight="5"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/ll_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/bg_gradient_mask_land"
+                        android:padding="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/scroll_labels"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <io.legado.app.ui.widget.LabelsBar
+                                android:id="@+id/lb_kind"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="visible" />
+
+                        </HorizontalScrollView>
+
+                        <com.google.android.material.button.MaterialButtonGroup
+                            android:id="@+id/cl_buttons"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/scroll_labels">
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_shelf"
+                                style="@style/Widget.Material3Expressive.Button.TextButton"
+                                app:cornerRadius="16dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="8dp"
+                                android:text="@string/remove_from_bookshelf"
+                                android:textSize="13sp"
+                                app:icon="@drawable/ic_clear_all"
+                                app:iconGravity="top"
+                                app:iconPadding="4dp"
+                                app:iconSize="20dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/tv_toc_view"
+                                style="@style/Widget.Material3Expressive.Button.TextButton"
+                                app:cornerRadius="16dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:padding="8dp"
+                                android:text="@string/view_toc"
+                                android:textSize="13sp"
+                                app:icon="@drawable/ic_toc"
+                                app:iconGravity="top"
+                                app:iconPadding="4dp"
+                                app:iconSize="20dp"
+                                app:layout_constraintStart_toEndOf="@id/btn_shelf"
+                                app:layout_constraintTop_toTopOf="@id/btn_shelf" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/tv_change_group"
+                                style="@style/Widget.Material3Expressive.Button.TextButton"
+                                app:cornerRadius="16dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:padding="8dp"
+                                android:text="@string/change_group"
+                                android:textSize="13sp"
+                                app:icon="@drawable/ic_groups"
+                                app:iconGravity="top"
+                                app:iconPadding="4dp"
+                                app:iconSize="20dp"
+                                app:layout_constraintStart_toEndOf="@id/tv_toc_view"
+                                app:layout_constraintTop_toTopOf="@id/tv_toc_view" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_change_source"
+                                style="@style/Widget.Material3Expressive.Button.TextButton"
+                                app:cornerRadius="16dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:padding="8dp"
+                                android:text="@string/book_source"
+                                android:textSize="13sp"
+                                app:icon="@drawable/ic_change_source"
+                                app:iconGravity="top"
+                                app:iconPadding="4dp"
+                                app:iconSize="20dp"
+                                app:layout_constraintStart_toEndOf="@id/tv_change_group"
+                                app:layout_constraintTop_toTopOf="@id/tv_change_group"
+                                tools:contentDescription="@string/change_origin" />
+                        </com.google.android.material.button.MaterialButtonGroup>
+
+                        <TextView
+                            android:id="@+id/tv_toc"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/cl_buttons"
+                            tools:text="@string/toc_s" />
+
+                        <TextView
+                            android:id="@+id/tv_lasted"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_toc"
+                            tools:text="@string/read_dur_progress" />
+
+
+                        <TextView
+                            android:id="@+id/tv_chapter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:singleLine="true"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_lasted"
+                            tools:text="@string/read_chapter_total" />
+
+                        <TextView
+                            android:id="@+id/div"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="|"
+                            android:textColor="?attr/colorSecondary"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tv_chapter"
+                            app:layout_constraintStart_toEndOf="@id/tv_chapter" />
+
+                        <TextView
+                            android:id="@+id/tv_chapter_index"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:singleLine="true"
+                            android:textColor="?attr/colorSecondary"
+                            android:textSize="14sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tv_chapter"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/div"
+                            tools:text="@string/read_chapter_index" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cd_remark"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:cardBackgroundColor="@android:color/transparent"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_marginVertical="8dp"
+                            android:visibility="gone"
+                            app:layout_constraintTop_toBottomOf="@id/tv_chapter">
+
+                            <TextView
+                                android:id="@+id/tv_remark"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:clickable="false"
+                                android:focusable="false"
+                                android:layout_margin="12dp"
+                                android:lineSpacingExtra="4dp"
+                                android:text="@string/book_intro"
+                                android:textIsSelectable="true"
+                                android:textSize="12sp"
+                                tools:text="@string/book_intro" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/tv_detail"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:lineSpacingExtra="4dp"
+                            android:minHeight="48dp"
+                            android:paddingBottom="80dp"
+                            android:text="@string/book_intro"
+                            android:textIsSelectable="true"
+                            android:textSize="14sp"
+                            android:visibility="visible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/cd_remark"
+                            tools:text="@string/book_intro" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="48dp"
+        android:contentDescription="@string/reading"
+        android:minWidth="56dp"
+        android:text="@string/reading"
+        android:textColor="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorTertiary"
+        app:icon="@drawable/ic_bottom_books"
+        app:iconTint="?attr/colorOnPrimary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

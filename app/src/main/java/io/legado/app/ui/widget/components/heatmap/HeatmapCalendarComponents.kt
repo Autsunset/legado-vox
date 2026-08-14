@@ -1,0 +1,341 @@
+package io.legado.app.ui.widget.components.heatmap
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import io.legado.app.R
+import io.legado.app.ui.theme.LegadoTheme
+import io.legado.app.ui.widget.components.button.series.MediumTonalButton
+import io.legado.app.ui.widget.components.button.series.MediumToggleButton
+import io.legado.app.ui.widget.components.text.AppText
+import io.legado.app.utils.formatReadDuration
+import java.time.LocalDate
+
+/**
+ * 热力图日历弹窗标题
+ */
+@Composable
+fun heatmapCalendarTitle(): String = stringResource(R.string.timeline)
+
+/**
+ * 热力图日历弹窗左侧操作
+ */
+@Composable
+fun HeatmapCalendarStartAction(
+    currentMode: HeatmapMode,
+    onModeChanged: (HeatmapMode) -> Unit,
+) {
+    MediumToggleButton(
+        checked = currentMode == HeatmapMode.TIME,
+        onCheckedChange = {
+            onModeChanged(if (it) HeatmapMode.TIME else HeatmapMode.COUNT)
+        },
+        icon = Icons.Default.FormatListNumbered,
+        iconChecked = Icons.Default.AccessTime,
+        text = stringResource(R.string.by_duration)
+    )
+}
+
+/**
+ * 热力图日历弹窗右侧操作
+ */
+@Composable
+fun HeatmapCalendarEndAction(
+    onClearDate: () -> Unit
+) {
+    MediumTonalButton(
+        onClick = onClearDate,
+        icon = Icons.Outlined.Delete,
+        contentDescription = stringResource(R.string.clear),
+    )
+}
+
+/**
+ * 星期标签列（周一到周日）
+ */
+@Composable
+fun WeekdayLabelsColumn(
+    cellSize: Dp,
+    cellSpacing: Dp,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 20.dp, end = 8.dp)
+    ) {
+        val labels = listOf(
+            stringResource(R.string.weekday_mon),
+            stringResource(R.string.weekday_tue),
+            stringResource(R.string.weekday_wed),
+            stringResource(R.string.weekday_thu),
+            stringResource(R.string.weekday_fri),
+            stringResource(R.string.weekday_sat),
+            stringResource(R.string.weekday_sun)
+        )
+
+        labels.forEachIndexed { index, label ->
+            if (index % 2 == 0) {
+                AppText(
+                    text = label,
+                    fontSize = 10.sp,
+                    color = LegadoTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.height(cellSize)
+                )
+            } else {
+                Spacer(modifier = Modifier.height(cellSize))
+            }
+
+            if (index < 6) Spacer(modifier = Modifier.height(cellSpacing))
+        }
+    }
+}
+
+/**
+ * 没有更早数据的提示组件
+ */
+@Composable
+fun NoEarlierDataIndicator(
+    cellSize: Dp,
+    touchTargetSize: Dp = cellSize,
+    modifier: Modifier = Modifier
+) {
+    val outlineColor = MaterialTheme.colorScheme.outlineVariant
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(top = 24.dp, start = 8.dp, end = 16.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            repeat(7) {
+                Box(
+                    modifier = Modifier
+                        .size(maxOf(cellSize, touchTargetSize)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(cellSize)
+                            .drawBehind {
+                                val strokeWidth = 1.dp.toPx()
+                                val stroke = Stroke(
+                                    width = strokeWidth,
+                                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f), 0f)
+                                )
+                                val inset = strokeWidth / 2
+                                drawRoundRect(
+                                    color = outlineColor,
+                                    style = stroke,
+                                    topLeft = Offset(inset, inset),
+                                    size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                                    cornerRadius = CornerRadius(4.dp.toPx())
+                                )
+                            }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            stringResource(R.string.no_earlier_data).forEach { char ->
+                AppText(
+                    text = char.toString(),
+                    fontSize = 9.sp,
+                    lineHeight = 12.sp,
+                    fontWeight = FontWeight.Light
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 单个日历单元格
+ */
+@Composable
+fun HeatmapCalendarCell(
+    day: LocalDate,
+    mode: HeatmapMode,
+    dailyReadCounts: Map<LocalDate, Int>,
+    dailyReadTimes: Map<LocalDate, Long>,
+    isSelected: Boolean,
+    config: HeatmapConfig,
+    onDateSelected: ((LocalDate) -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    val level = rememberHeatmapLevel(day, mode, dailyReadCounts, dailyReadTimes)
+    val cellColor = heatmapColorForLevel(level)
+    val readCount = dailyReadCounts[day] ?: 0
+    val readDuration = formatReadDuration(dailyReadTimes[day] ?: 0L)
+    val cellDescription = if (mode == HeatmapMode.COUNT) {
+        stringResource(R.string.a11y_heatmap_day_count, day.toString(), readCount)
+    } else {
+        stringResource(R.string.a11y_heatmap_day_duration, day.toString(), readDuration)
+    }
+    Box(
+        modifier = modifier
+            .size(config.interactiveCellSize)
+            .then(
+                onDateSelected?.let { onSelect ->
+                    Modifier.clickable { onSelect(day) }
+                } ?: Modifier
+            )
+            .semantics {
+                contentDescription = cellDescription
+                if (isSelected) {
+                    selected = true
+                }
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(config.cellSize)
+                .clip(RoundedCornerShape(config.cornerRadius))
+                .background(cellColor)
+                .border(
+                    width = if (isSelected) 2.dp else 0.dp,
+                    color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                    shape = RoundedCornerShape(config.cornerRadius)
+                )
+        )
+    }
+}
+
+/**
+ * 一周的日历列（包含月份标签）
+ */
+@Composable
+fun HeatmapWeekColumn(
+    week: List<LocalDate?>,
+    mode: HeatmapMode,
+    dailyReadCounts: Map<LocalDate, Int>,
+    dailyReadTimes: Map<LocalDate, Long>,
+    selectedDate: LocalDate?,
+    config: HeatmapConfig,
+    onDateSelected: ((LocalDate) -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    val firstDayOfMonth = week.firstOrNull { it?.dayOfMonth == 1 }
+
+    Box(modifier = modifier.width(config.interactiveCellSize)) {
+        Column(
+            modifier = Modifier.padding(top = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(config.cellSpacing)
+        ) {
+            week.forEach { day ->
+                if (day == null) {
+                    Spacer(modifier = Modifier.size(config.interactiveCellSize))
+                } else {
+                    HeatmapCalendarCell(
+                        day = day,
+                        mode = mode,
+                        dailyReadCounts = dailyReadCounts,
+                        dailyReadTimes = dailyReadTimes,
+                        isSelected = day == selectedDate,
+                        config = config,
+                        onDateSelected = onDateSelected
+                    )
+                }
+            }
+        }
+
+        // 月份标签
+        if (firstDayOfMonth != null) {
+            AppText(
+                text = stringResource(R.string.month_format, firstDayOfMonth.monthValue),
+                fontSize = 10.sp,
+                color = LegadoTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .wrapContentWidth(unbounded = true)
+            )
+        }
+    }
+}
+
+/**
+ * 热力图图例
+ */
+@Composable
+fun HeatmapLegend(
+    mode: HeatmapMode,
+    config: HeatmapConfig,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val legendUnit = if (mode == HeatmapMode.COUNT) stringResource(R.string.count_unit) else stringResource(R.string.duration_unit)
+
+        AppText(
+            stringResource(R.string.less_count) + legendUnit + ")",
+            style = LegadoTheme.typography.bodySmall,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        for (level in 0..4) {
+            Box(
+                modifier = Modifier
+                    .size(config.legendSize)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(heatmapColorForLevel(level))
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+
+        AppText(
+            stringResource(R.string.more_count) + legendUnit + ")",
+            style = LegadoTheme.typography.bodySmall,
+            color = Color.Gray
+        )
+    }
+}

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/bottom_sheet_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/padding"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/ll_header_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_header_padding"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/header"
+                    style="@style/ChapterNameText" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cb_show_top_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/showLine"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <io.legado.app.ui.widget.SimpleCounterView
+                    android:id="@+id/dsb_header_padding_top"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:max="300"
+                    app:title="@string/padding_top" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+
+                <io.legado.app.ui.widget.SimpleCounterView
+                    android:id="@+id/dsb_header_padding_bottom"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:max="300"
+                    app:title="@string/padding_bottom" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <io.legado.app.ui.widget.SimpleCounterView
+                    android:id="@+id/dsb_header_padding_left"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:max="300"
+                    app:title="@string/padding_left" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+                <io.legado.app.ui.widget.SimpleCounterView
+                    android:id="@+id/dsb_header_padding_right"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:max="300"
+                    app:title="@string/padding_right" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_body_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/main_body"
+            style="@style/ChapterNameText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_padding_top"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_top" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_padding_bottom"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_bottom" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_padding_left"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_left" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_padding_right"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/footer"
+                style="@style/ChapterNameText" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cb_show_bottom_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/showLine" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_footer_padding_top"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_top" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_footer_padding_bottom"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_bottom" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_footer_padding_left"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_left" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <io.legado.app.ui.widget.SimpleCounterView
+                android:id="@+id/dsb_footer_padding_right"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:max="300"
+                app:title="@string/padding_right" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

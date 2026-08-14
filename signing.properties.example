@@ -1,0 +1,5 @@
+# Copy this file to signing.properties and keep the real file private.
+RELEASE_STORE_FILE=keystore/legado-vox-release.jks
+RELEASE_STORE_PASSWORD=change-me
+RELEASE_KEY_ALIAS=legado-vox
+RELEASE_KEY_PASSWORD=change-me

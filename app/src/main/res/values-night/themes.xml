@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.AppTheme" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="tabStyle">@style/Widget.App.TabLayout</item>
+        <item name="chipStyle">@style/Widget.MyApp.Chip.Assist</item>
+        <item name="popupMenuBackground">@drawable/popup_background</item>
+        <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <item name="navigationRailStyle">@style/Widget.Material3Expressive.NavigationRailView</item>
+        <item name="bottomNavigationStyle">@style/Widget.Material3Expressive.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.WhiteBackground" parent="">
+        <item name="colorOnPrimary">@color/wh_theme_onPrimary</item>
+        <item name="colorOnSecondary">@color/wh_theme_onSecondary</item>
+        <item name="colorOnTertiary">@color/wh_theme_onTertiary</item>
+        <item name="colorOnTertiaryContainer">@color/wh_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/wh_theme_error</item>
+        <item name="colorOnError">@color/wh_theme_onError</item>
+        <item name="colorErrorContainer">@color/wh_theme_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/wh_theme_onErrorContainer</item>
+        <item name="android:colorBackground">@color/wh_theme_background</item>
+        <item name="colorOnBackground">@color/wh_theme_onBackground</item>
+        <item name="colorSurface">@color/wh_theme_surface</item>
+        <item name="colorOnSurface">@color/wh_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/wh_theme_surfaceVariant</item>
+        <item name="colorOutlineVariant">@color/wh_theme_outlineVariant</item>
+        <item name="colorOnSurfaceInverse">@color/wh_theme_inverseOnSurface</item>
+        <item name="colorTertiaryFixed">@color/wh_theme_tertiaryFixed</item>
+        <item name="colorOnTertiaryFixed">@color/wh_theme_onTertiaryFixed</item>
+        <item name="colorTertiaryFixedDim">@color/wh_theme_tertiaryFixedDim</item>
+        <item name="colorOnTertiaryFixedVariant">@color/wh_theme_onTertiaryFixedVariant</item>
+        <item name="colorSurfaceDim">@color/wh_theme_surfaceDim</item>
+        <item name="colorSurfaceBright">@color/wh_theme_surfaceBright</item>
+        <item name="colorSurfaceContainerLowest">@color/wh_theme_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/wh_theme_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/wh_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/wh_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/wh_theme_surfaceContainerHighest</item>
+    </style>
+
+    <style name="ThemeOverlay.PureBlack" parent="">
+        <item name="android:colorBackground">@color/black</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorSurfaceContainer">?attr/colorSurfaceContainerLowest</item>
+    </style>
+
+</resources>

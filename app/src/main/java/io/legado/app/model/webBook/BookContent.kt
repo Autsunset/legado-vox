@@ -1,0 +1,262 @@
+package io.legado.app.model.webBook
+
+import io.legado.app.R
+import io.legado.app.constant.AppPattern
+import io.legado.app.data.appDb
+import io.legado.app.data.entities.Book
+import io.legado.app.data.entities.BookChapter
+import io.legado.app.data.entities.BookSource
+import io.legado.app.data.entities.rule.ContentRule
+import io.legado.app.exception.ContentEmptyException
+import io.legado.app.exception.NoStackTraceException
+import io.legado.app.help.book.BookHelp
+import io.legado.app.help.book.isAudio
+import io.legado.app.help.book.isOnLineTxt
+import io.legado.app.help.book.isVideo
+import io.legado.app.help.config.AppConfig
+import io.legado.app.model.Debug
+import io.legado.app.model.analyzeRule.AnalyzeRule
+import io.legado.app.model.analyzeRule.AnalyzeRule.Companion.setChapter
+import io.legado.app.model.analyzeRule.AnalyzeRule.Companion.setCoroutineContext
+import io.legado.app.model.analyzeRule.AnalyzeRule.Companion.setNextChapterUrl
+import io.legado.app.model.analyzeRule.AnalyzeUrl
+import io.legado.app.ui.config.otherConfig.OtherConfig
+import io.legado.app.utils.HtmlFormatter
+import io.legado.app.utils.NetworkUtils
+import io.legado.app.utils.mapAsync
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.flow
+import org.apache.commons.text.StringEscapeUtils
+import splitties.init.appCtx
+import kotlin.coroutines.coroutineContext
+
+/**
+ * 获取正文
+ */
+object BookContent {
+
+    private const val maxNextPageConcurrency = 4
+
+    @Throws(Exception::class)
+    suspend fun analyzeContent(
+        bookSource: BookSource,
+        book: Book,
+        bookChapter: BookChapter,
+        baseUrl: String,
+        redirectUrl: String,
+        body: String?,
+        nextChapterUrl: String?,
+        needSave: Boolean = true
+    ): String {
+        body ?: throw NoStackTraceException(
+            appCtx.getString(R.string.error_get_web_content, baseUrl)
+        )
+        Debug.log(bookSource.bookSourceUrl, "≡获取成功:${baseUrl}")
+        if (!needSave) {
+            Debug.log(bookSource.bookSourceUrl, body, state = 40)
+        }
+        val mNextChapterUrl = if (nextChapterUrl.isNullOrEmpty()) {
+            appDb.bookChapterDao.getChapter(book.bookUrl, bookChapter.index + 1)?.url
+                ?: appDb.bookChapterDao.getChapter(book.bookUrl, 0)?.url
+        } else {
+            nextChapterUrl
+        }
+        var pageCount = 0
+        val contentBuilder = StringBuilder()
+        fun appendContent(content: String) {
+            if (pageCount > 0) {
+                contentBuilder.append('\n')
+            }
+            contentBuilder.append(content)
+            pageCount++
+        }
+        val nextUrlList = arrayListOf(redirectUrl)
+        val contentRule = bookSource.getContentRule()
+        val analyzeRule = AnalyzeRule(book, bookSource)
+        analyzeRule.setContent(body, baseUrl)
+        analyzeRule.setRedirectUrl(redirectUrl)
+        analyzeRule.setCoroutineContext(coroutineContext)
+        analyzeRule.setChapter(bookChapter)
+        analyzeRule.setNextChapterUrl(mNextChapterUrl)
+        coroutineContext.ensureActive()
+        var contentData = analyzeContent(
+            book, baseUrl, redirectUrl, body, contentRule, bookChapter, bookSource, mNextChapterUrl
+        )
+        appendContent(contentData.first)
+        if (contentData.second.size == 1) {
+            var nextUrl = contentData.second[0]
+            while (nextUrl.isNotEmpty() && !nextUrlList.contains(nextUrl)) {
+                if (!mNextChapterUrl.isNullOrEmpty()
+                    && NetworkUtils.getAbsoluteURL(redirectUrl, nextUrl)
+                    == NetworkUtils.getAbsoluteURL(redirectUrl, mNextChapterUrl)
+                ) break
+                nextUrlList.add(nextUrl)
+                coroutineContext.ensureActive()
+                val analyzeUrl = AnalyzeUrl(
+                    mUrl = nextUrl,
+                    source = bookSource,
+                    ruleData = book,
+                    coroutineContext = coroutineContext
+                )
+                val res = analyzeUrl.getStrResponseAwait() //控制并发访问
+                res.body?.let { nextBody ->
+                    contentData = analyzeContent(
+                        book, nextUrl, res.url, nextBody, contentRule,
+                        bookChapter, bookSource, mNextChapterUrl,
+                        printLog = false
+                    )
+                    nextUrl =
+                        if (contentData.second.isNotEmpty()) contentData.second[0] else ""
+                    appendContent(contentData.first)
+                    Debug.log(bookSource.bookSourceUrl, "第${pageCount}页完成")
+                }
+            }
+            Debug.log(bookSource.bookSourceUrl, "◇本章总页数:${nextUrlList.size}")
+        } else if (contentData.second.size > 1) {
+            Debug.log(bookSource.bookSourceUrl, "◇并发解析正文,总页数:${contentData.second.size}")
+            flow {
+                for (urlStr in contentData.second) {
+                    emit(urlStr)
+                }
+            }.mapAsync(OtherConfig.threadCount.coerceIn(1, maxNextPageConcurrency)) { urlStr ->
+                val analyzeUrl = AnalyzeUrl(
+                    mUrl = urlStr,
+                    source = bookSource,
+                    ruleData = book,
+                    coroutineContext = coroutineContext
+                )
+                val res = analyzeUrl.getStrResponseAwait() //控制并发访问
+                analyzeContent(
+                    book, urlStr, res.url, res.body!!, contentRule,
+                    bookChapter, bookSource, mNextChapterUrl,
+                    getNextPageUrl = false,
+                    printLog = false
+                ).first
+            }.collect {
+                coroutineContext.ensureActive()
+                appendContent(it)
+            }
+        }
+        contentRule.subContent?.takeIf { it.isNotBlank() }?.let { rule ->
+            val rawSubContent = analyzeRule.getString(rule, unescape = false).trim()
+            val subContent = if (rawSubContent.startsWith("http", ignoreCase = true)) {
+                AnalyzeUrl(
+                    mUrl = rawSubContent,
+                    source = bookSource,
+                    ruleData = book,
+                    coroutineContext = coroutineContext,
+                ).getStrResponseAwait().body.orEmpty()
+            } else {
+                rawSubContent
+            }
+            if (subContent.isNotBlank()) {
+                if (book.isOnLineTxt) {
+                    appendContent(subContent)
+                } else if (book.isAudio) {
+                    bookChapter.putVariable("lyric", subContent)
+                }
+            }
+        }
+        var contentStr = contentBuilder.toString()
+        val titleRule = contentRule.title //先正文再章节名称
+        if (!titleRule.isNullOrBlank()) {
+            var title = analyzeRule.runCatching {
+                getString(titleRule)
+            }.onFailure {
+                Debug.log(bookSource.bookSourceUrl, "获取标题出错, ${it.localizedMessage}")
+            }.getOrNull()
+            if (!title.isNullOrBlank()) {
+                val matchResult = AppPattern.imgRegex.find(title)
+                if (matchResult != null) {
+                    matchResult.groupValues[1]
+                    val (group1,group2) = matchResult.destructured
+                    title = if (group1 != "") {
+                        group1
+                    } else {
+                        bookChapter.title
+                    }
+                    bookChapter.reviewImg = group2
+                }
+                bookChapter.title = title
+                bookChapter.titleMD5 = null
+                appDb.bookChapterDao.update(bookChapter)
+            }
+        }
+        //全文替换
+        val replaceRegex = contentRule.replaceRegex
+        if (!replaceRegex.isNullOrEmpty()) {
+            contentStr = contentStr.split(AppPattern.LFRegex).joinToString("\n") { it.trim() }
+            contentStr = analyzeRule.getString(replaceRegex, contentStr)
+            contentStr = contentStr.split(AppPattern.LFRegex).joinToString("\n") { "　　$it" }
+        }
+        Debug.log(bookSource.bookSourceUrl, "┌获取章节名称")
+        Debug.log(bookSource.bookSourceUrl, "└${bookChapter.title}")
+        Debug.log(bookSource.bookSourceUrl, "┌获取正文内容")
+        if (needSave) {
+            Debug.log(bookSource.bookSourceUrl, "└正文长度:${contentStr.length}")
+        } else {
+            Debug.log(bookSource.bookSourceUrl, "└\n$contentStr")
+        }
+        if (!bookChapter.isVolume && contentStr.isBlank()) {
+            throw ContentEmptyException("内容为空")
+        }
+        if (needSave) {
+            BookHelp.saveContent(bookSource, book, bookChapter, contentStr)
+        }
+        return contentStr
+    }
+
+    @Throws(Exception::class)
+    private suspend fun analyzeContent(
+        book: Book,
+        baseUrl: String,
+        redirectUrl: String,
+        body: String,
+        contentRule: ContentRule,
+        chapter: BookChapter,
+        bookSource: BookSource,
+        nextChapterUrl: String?,
+        getNextPageUrl: Boolean = true,
+        printLog: Boolean = true
+    ): Pair<String, List<String>> {
+        val analyzeRule = AnalyzeRule(book, bookSource)
+        analyzeRule.setContent(body, baseUrl)
+        analyzeRule.setCoroutineContext(currentCoroutineContext())
+        val rUrl = analyzeRule.setRedirectUrl(redirectUrl)
+        analyzeRule.setNextChapterUrl(nextChapterUrl)
+        val nextUrlList = arrayListOf<String>()
+        analyzeRule.setChapter(chapter)
+        //获取正文
+        var content = analyzeRule.getString(contentRule.content, unescape = false)
+        if (!book.isAudio && !book.isVideo) { //音频和视频获取的是链接，不需要html格式化 && !book.isVideo
+            val useHtmlMap = mutableMapOf<String, String>()
+            if (AppConfig.adaptSpecialStyle) {
+                content = AppPattern.useHtmlRegex.replace(content) {
+                    val placeholder = "{usehtml_${useHtmlMap.size}}"
+                    useHtmlMap[placeholder] = it.value
+                    placeholder
+                }
+            }
+            content = HtmlFormatter.formatKeepImg(content, rUrl) //内置净化格式化
+            if (content.indexOf('&') > -1) {
+                content = StringEscapeUtils.unescapeHtml4(content)
+            }
+            useHtmlMap.forEach { (placeholder, originalContent) ->
+                content = content.replace(placeholder, originalContent)
+            }
+        }
+        //获取下一页链接
+        if (getNextPageUrl) {
+            val nextUrlRule = contentRule.nextContentUrl
+            if (!nextUrlRule.isNullOrEmpty()) {
+                Debug.log(bookSource.bookSourceUrl, "┌获取正文下一页链接", printLog)
+                analyzeRule.getStringList(nextUrlRule, isUrl = true)?.let {
+                    nextUrlList.addAll(it)
+                }
+                Debug.log(bookSource.bookSourceUrl, "└" + nextUrlList.joinToString("，"), printLog)
+            }
+        }
+        return Pair(content, nextUrlList)
+    }
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/menu_group"
+        android:icon="@drawable/ic_groups"
+        android:title="@string/menu_action_group"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction">
+
+        <menu>
+
+            <item
+                android:id="@+id/menu_group_manage"
+                android:title="@string/group_manage" />
+
+            <item
+                android:id="@+id/menu_group_null"
+                android:title="@string/no_group" />
+
+            <group android:id="@+id/replace_group">
+
+            </group>
+
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/menu_sort"
+        android:title="@string/sort"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="always">
+        <menu>
+            <group
+                android:id="@+id/group_sort"
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/sort_order_asc"
+                    android:title="@string/sort_old_to_new" />
+
+                <item
+                    android:id="@+id/sort_order_desc"
+                    android:title="@string/sort_new_to_old" />
+
+                <item
+                    android:id="@+id/sort_name_asc"
+                    android:title="@string/sort_name_asc" />
+
+                <item
+                    android:id="@+id/sort_name_desc"
+                    android:title="@string/sort_name_desc" />
+
+            </group>
+        </menu>
+    </item>
+
+
+    <item
+        android:id="@+id/menu_add_replace_rule"
+        android:icon="@drawable/ic_add"
+        android:title="@string/add_replace_rule"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_import_local"
+        android:icon="@drawable/ic_import"
+        android:title="@string/import_local"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_import_onLine"
+        android:icon="@drawable/ic_import"
+        android:title="@string/import_on_line"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_import_qr"
+        android:icon="@drawable/ic_import"
+        android:title="@string/import_by_qr_code"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_help"
+        android:icon="@drawable/ic_help"
+        android:title="@string/help"
+        app:showAsAction="never" />
+
+</menu>

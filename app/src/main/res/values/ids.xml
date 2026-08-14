@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="tag" type="id" />
+    <item name="tag1" type="id" />
+    <item name="tag2" type="id" />
+
+    <item name="menu_group_1" type="id" />
+    <item name="menu_group_2" type="id" />
+
+    <item name="menu_1" type="id" />
+
+    <item name="fast_scroller" type="id" />
+
+    <item name="bettermovementmethod_highlight_background_span" type="id" />
+
+    <item name="text_menu_position" type="id" />
+    <item name="cursor_left" type="id" />
+    <item name="cursor_right" type="id" />
+    <item name="navigation_bar" type="id" />
+
+    <item name="menu_replace" type="id" />
+    <item name="menu_ai_clean" type="id" />
+    <item name="menu_ai_rewrite" type="id" />
+    <item name="menu_copy" type="id" />
+    <item name="menu_bookmark" type="id" />
+    <item name="menu_aloud" type="id" />
+    <item name="menu_dict" type="id" />
+    <item name="menu_edit" type="id" />
+    <item name="menu_search_content" type="id" />
+    <item name="menu_mark" type="id" />
+    <item name="menu_browser" type="id" />
+    <item name="menu_share_str" type="id" />
+</resources>

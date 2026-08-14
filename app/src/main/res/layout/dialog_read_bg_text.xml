@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:minHeight="0dp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/tv_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/style_name"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_name_title"
+            tools:text="文字" />
+
+        <com.google.android.material.button.MaterialButtonGroup
+            android:id="@+id/mbg_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/tv_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_name">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_edit"
+                style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/edit"
+                app:icon="@drawable/ic_edit"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_delete"
+                style="@style/Widget.Material3Expressive.Button.IconButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/delete"
+                app:icon="@drawable/ic_clear_all"
+                tools:ignore="UnusedAttribute" />
+
+        </com.google.android.material.button.MaterialButtonGroup>
+
+
+        <com.google.android.material.button.MaterialButtonGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mbg_1">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tv_restore"
+                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/restore"
+                app:icon="@drawable/ic_restore" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_import"
+                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/import_str"
+                android:text="@string/import_str"
+                app:icon="@drawable/ic_import" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/iv_export"
+                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/import_str"
+                android:text="@string/export_str"
+                app:icon="@drawable/ic_export" />
+
+        </com.google.android.material.button.MaterialButtonGroup>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/sw_dark_status_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:text="@string/dark_status_icon"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal">
+        <io.legado.app.ui.widget.SimpleCounterView
+            android:id="@+id/dottedBase"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            app:max="100"
+            app:title="实线长度"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <io.legado.app.ui.widget.SimpleCounterView
+            android:id="@+id/dottedRatio"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            app:max="100"
+            app:title="比例"/>
+    </LinearLayout>
+
+
+
+    <com.google.android.material.button.MaterialButtonGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tv_bg_color"
+            style="@style/Widget.Material3Expressive.Button.TonalButton"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_fill_colors"
+            android:text="@string/bg_color"
+            app:cornerRadius="12dp" />
+
+    </com.google.android.material.button.MaterialButtonGroup>
+
+    <TextView
+        android:id="@+id/tv_bg_alpha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="@string/bg_alpha" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/sb_bg_alpha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="0.0"
+        android:valueTo="100.0"
+        android:stepSize="1"
+        android:padding="6dp"
+        tools:ignore="UnusedAttribute" />
+
+    <TextView
+        android:id="@+id/tv_bg_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="@string/bg_image" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:paddingVertical="8dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_bg_image" />
+
+</LinearLayout>

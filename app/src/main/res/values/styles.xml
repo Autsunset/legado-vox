@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabBackground">@android:color/transparent</item>
+        <item name="tabIndicator">@drawable/selected_chip_background</item>
+        <item name="tabIndicatorColor">?attr/colorSecondaryContainer</item>
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabIndicatorGravity">stretch</item>
+        <item name="tabMinWidth">0dp</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabGravity">start</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabRippleColor">@android:color/transparent</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSecondaryContainer</item>
+        <item name="tabTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="tabTextAppearance">@style/TabTextAppearance</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="AppTheme.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="dialogCornerRadius">28dp</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="android:colorBackground">?attr/colorSurfaceContainerLow</item>
+        <item name="android:layout" tools:ignore="PrivateResource">@layout/m3_alert_dialog</item>
+    </style>
+
+    <style name="Widget.MyApp.Chip.Assist" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">@color/chip_background_selector</item>
+        <item name="chipStrokeColor">@color/chip_stroke_selector</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
+    </style>
+
+    <style name="NoBackgroundNavi" parent="ThemeOverlay.Material3.Toolbar.CircleNavigationButton">
+        <item name="toolbarNavigationButtonCircleColor">@color/transparent</item>
+    </style>
+
+    <style name="TextActionMenuAnimation">
+        <item name="android:windowEnterAnimation">@anim/popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/popup_exit</item>
+    </style>
+
+    <style name="ChapterNameText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    //**********System Style******************//
+
+    <style name="Spinner" parent="android:Theme.Holo.Light" />
+
+    <style name="ShapeAppearanceOverlay.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Activity.Permission" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+</resources>

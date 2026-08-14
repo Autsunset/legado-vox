@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:key="themeCategory"
+        android:title="@string/theme"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+        app:iconSpaceReserved="false"
+        app:layout="@layout/view_preference_category">
+
+        <io.legado.app.lib.prefs.ThemeModePreference
+            android:defaultValue="0"
+            android:entries="@array/theme_mode"
+            android:entryValues="@array/theme_mode_v"
+            android:key="themeMode" />
+
+        <io.legado.app.lib.prefs.ThemeCardPreference
+            android:key="app_theme"
+            android:title="应用主题"
+            android:summary="喵喵喵"
+            android:entries="@array/themes_item"
+            android:entryValues="@array/themes_value"
+            android:defaultValue="0" />
+
+        <io.legado.app.lib.prefs.TipPreference
+            android:key="tip"
+            android:selectable="false"
+            app:iconSpaceReserved="false"
+            app:tipText="@string/tip_custom_mode"/>
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="pure_black"
+            android:title="@string/pure_black" />
+
+        <io.legado.app.lib.prefs.ColorPreference
+            android:defaultValue="@color/md_green_500"
+            android:key="colorPrimary"
+            android:summary="@string/seed_color_summary"
+            android:title="@string/seed_color"
+            app:cpv_dialogType="preset"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="global"
+            android:key="customMode"
+            android:title="@string/custom_mode"
+            app:entries="@array/customMode"
+            app:entryValues="@array/customMode_value" />
+
+        <io.legado.app.lib.prefs.IconListPreference
+            android:defaultValue="ic_launcher"
+            android:entries="@array/icon_names"
+            android:entryValues="@array/icons"
+            android:key="launcherIcon"
+            android:summary="@string/change_icon_summary"
+            android:title="@string/change_icon"
+            app:iconSpaceReserved="false"
+            app:icons="@array/icons" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="fontScale"
+            android:summary="@string/font_scale_summary"
+            android:title="@string/font_scale"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="coverConfig"
+            android:title="@string/cover_config"
+            android:summary="@string/cover_config_summary"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:title="Compose 相关"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:layout="@layout/view_preference_category">
+
+        <io.legado.app.lib.prefs.TipPreference
+            android:key="tip"
+            android:selectable="false"
+            app:iconSpaceReserved="false"
+            app:tipText="@string/tip_compose_set" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="tonalSpot"
+            android:key="paletteStyle"
+            android:title="@string/palette_style"
+            app:entries="@array/paletteStyle"
+            app:entryValues="@array/paletteStyle_value" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="material"
+            android:enabled="false"
+            android:key="composeEngine"
+            android:title="@string/compose_engine"
+            app:entries="@array/composeEngine"
+            app:entryValues="@array/composeEngine_value" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="containerOpacity"
+            android:summary="@string/container_opacity_summary"
+            android:title="@string/container_opacity"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="enableBlur"
+            android:title="@string/is_blur_enable"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="enableProgressiveBlur"
+            android:title="@string/is_blur_progressive_enable"
+            app:iconSpaceReserved="false" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:title="@string/main_activity"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:layout="@layout/view_preference_category">
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="showDiscovery"
+            android:title="@string/show_discovery"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="showRss"
+            android:title="@string/show_rss"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="showStatusBar"
+            android:title="@string/show_status"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="swipeAnimation"
+            android:title="@string/show_swipe_animation"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="showBottomView"
+            android:summary="@string/be_swiped"
+            android:title="@string/show_bottom_nav"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="auto"
+            android:key="tabletInterface"
+            android:title="@string/tabletInterface"
+            app:entries="@array/tabletInterface"
+            app:entryValues="@array/tabletInterface_value" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="auto"
+            android:key="labelVisibilityMode"
+            android:title="@string/nav_label_mode"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:entries="@array/label_vis_mode"
+            app:entryValues="@array/label_vis_mode_value" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="bookshelf"
+            android:key="defaultHomePage"
+            android:title="@string/default_home_page"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:entries="@array/default_home_page"
+            app:entryValues="@array/default_home_page_value" />
+
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="isPredictiveBackEnabled"
+            android:summary="仅部分设备可用"
+            android:title="预见性返回手势" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:key="backgroundIma"
+        android:title="@string/background_image"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:layout="@layout/view_preference_category">
+
+        <io.legado.app.lib.prefs.ImagePreviewPreference
+            android:key="backgroundImage"
+            android:title="@string/light_mode" />
+
+        <io.legado.app.lib.prefs.ImagePreviewPreference
+            android:key="backgroundImageNight"
+            android:title="@string/dark_mode" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:key="dayThemeCategory"
+        android:title="@string/share"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:layout="@layout/view_preference_category">
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="themeList"
+            android:summary="@string/theme_list_summary"
+            android:title="@string/theme_list"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="saveDayTheme"
+            android:summary="@string/save_day_theme_summary"
+            android:title="@string/save_theme_config"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

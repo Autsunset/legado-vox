@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
+
+    <string-array name="icons">
+        <item>ic_launcher</item>
+        <item>launcherw</item>
+        <item>launcher0</item>
+        <item>launcher1</item>
+        <item>launcher2</item>
+        <item>launcher3</item>
+        <item>launcher4</item>
+        <item>launcher5</item>
+        <item>launcher6</item>
+    </string-array>
+
+    <string-array name="screen_time_out_value">
+        <item>0</item>
+        <item>60</item>
+        <item>300</item>
+        <item>600</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="theme_mode_v">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="themes_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+
+    <string-array name="screen_direction_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="click_image_way_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="double_page_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="progress_bar_behavior_value">
+        <item>page</item>
+        <item>chapter</item>
+    </string-array>
+
+    <string-array name="brightness_bar_mode_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="brightness_bar_position_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="language_value">
+        <item>auto</item>
+        <item>zh</item>
+        <item>tw</item>
+        <item>en</item>
+    </string-array>
+
+    <string-array name="tabletInterface_value">
+        <item>auto</item>
+        <item>always</item>
+        <item>landscape</item>
+        <item>off</item>
+    </string-array>
+
+    <string-array name="paletteStyle_value">
+        <item>tonalSpot</item>
+        <item>neutral</item>
+        <item>vibrant</item>
+        <item>expressive</item>
+        <item>rainbow</item>
+        <item>fruitSalad</item>
+        <item>monochrome</item>
+        <item>fidelity</item>
+        <item>content</item>
+    </string-array>
+
+    <string-array name="materialVersion_value">
+        <item>material3</item>
+        <item>material3Expressive</item>
+    </string-array>
+
+    <string-array name="composeEngine_value">
+        <item>material</item>
+        <item>miuix</item>
+    </string-array>
+
+    <string-array name="customMode_value">
+        <item>global</item>
+        <item>accent</item>
+    </string-array>
+
+    <string-array name="label_vis_mode_value">
+        <item>auto</item>
+        <item>selected</item>
+        <item>labeled</item>
+        <item>unlabeled</item>
+    </string-array>
+
+    <string-array name="book_info_background_blur_values">
+        <item>off</item>
+        <item>on</item>
+        <item>off_for_default</item>
+    </string-array>
+
+    <string-array name="read_slider_mode_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="title_bar_mode_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="customContrast_value">
+        <item>Default</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+
+    <string-array name="backup_sync_mode_value">
+        <item>both</item>
+        <item>local</item>
+        <item>webdav</item>
+    </string-array>
+
+</resources>
