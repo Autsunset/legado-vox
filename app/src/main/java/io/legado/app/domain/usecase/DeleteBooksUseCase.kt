@@ -1,5 +1,6 @@
 package io.legado.app.domain.usecase
 
+import io.legado.app.domain.gateway.BookCacheCleanupGateway
 import io.legado.app.domain.gateway.BookSourceCallbackGateway
 import io.legado.app.domain.gateway.LocalBookGateway
 import io.legado.app.domain.repository.BookDomainRepository
@@ -7,10 +8,15 @@ import io.legado.app.domain.repository.BookDomainRepository
 class DeleteBooksUseCase(
     private val bookRepository: BookDomainRepository,
     private val localBookGateway: LocalBookGateway,
-    private val bookSourceCallbackGateway: BookSourceCallbackGateway
+    private val bookSourceCallbackGateway: BookSourceCallbackGateway,
+    private val bookCacheCleanupGateway: BookCacheCleanupGateway,
 ) {
 
-    suspend fun execute(bookUrls: Set<String>, deleteOriginal: Boolean): List<String> {
+    suspend fun execute(
+        bookUrls: Set<String>,
+        deleteOriginal: Boolean,
+        deleteCache: Boolean = false,
+    ): List<String> {
         if (bookUrls.isEmpty()) return emptyList()
         val books = bookRepository.getDeletableBooks(bookUrls)
         books.forEach { book ->
@@ -18,6 +24,9 @@ class DeleteBooksUseCase(
                 localBookGateway.deleteBook(book.bookUrl, deleteOriginal)
             } else {
                 bookSourceCallbackGateway.onDeleteFromShelf(book.bookUrl)
+                if (deleteCache) {
+                    bookCacheCleanupGateway.clear(book.bookUrl)
+                }
             }
             bookRepository.deleteChaptersByBook(book.bookUrl)
         }

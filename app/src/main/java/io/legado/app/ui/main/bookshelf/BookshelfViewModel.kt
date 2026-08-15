@@ -18,6 +18,7 @@ import io.legado.app.data.repository.BookshelfRepository
 import io.legado.app.data.repository.UploadRepository
 import io.legado.app.domain.usecase.AddBookUseCase
 import io.legado.app.domain.usecase.BatchCacheDownloadUseCase
+import io.legado.app.domain.usecase.DeleteBooksUseCase
 import io.legado.app.domain.usecase.ExportBookshelfUseCase
 import io.legado.app.domain.usecase.ImportBookshelfUseCase
 import io.legado.app.domain.usecase.RefreshTocUseCase
@@ -84,6 +85,7 @@ class BookshelfViewModel(
     private val bookshelfRepository: BookshelfRepository,
     private val uploadRepository: UploadRepository,
     private val batchCacheDownloadUseCase: BatchCacheDownloadUseCase,
+    private val deleteBooksUseCase: DeleteBooksUseCase,
     private val updateBooksGroupUseCase: UpdateBooksGroupUseCase,
     private val refreshTocUseCase: RefreshTocUseCase,
     private val addBookUseCase: AddBookUseCase,
@@ -686,6 +688,11 @@ class BookshelfViewModel(
             is BookshelfIntent.SetInFolderRoot -> setInFolderRoot(intent.value)
             is BookshelfIntent.MoveBooksToGroup -> moveBooksToGroup(intent.bookUrls, intent.groupId)
             is BookshelfIntent.DownloadBooks -> downloadBooks(intent.bookUrls, intent.allChapters)
+            is BookshelfIntent.DeleteBooks -> deleteBooks(
+                intent.bookUrls,
+                intent.deleteOriginal,
+                intent.deleteCache,
+            )
             is BookshelfIntent.RefreshBooks -> refreshBooks(intent.books)
             is BookshelfIntent.StartDragging -> startDraggingBooks(intent.books)
             is BookshelfIntent.MoveDragging -> moveDraggingBook(intent.from, intent.to, intent.books)
@@ -888,6 +895,31 @@ class BookshelfViewModel(
             }
         }.onError {
             showMessage("批量缓存失败\n${it.localizedMessage}")
+        }
+    }
+
+    private fun deleteBooks(
+        bookUrls: Set<String>,
+        deleteOriginal: Boolean,
+        deleteCache: Boolean,
+    ) {
+        if (bookUrls.isEmpty()) return
+        execute {
+            deleteBooksUseCase.execute(bookUrls, deleteOriginal, deleteCache)
+        }.onSuccess { deletedBookUrls ->
+            clearSelection()
+            if (deletedBookUrls.isNotEmpty()) {
+                _effects.tryEmit(
+                    BookshelfEffect.ShowSnackbar(
+                        context.getString(
+                            R.string.removed_books_from_bookshelf,
+                            deletedBookUrls.size,
+                        )
+                    )
+                )
+            }
+        }.onError {
+            showMessage("移出书架失败\n${it.localizedMessage}")
         }
     }
 

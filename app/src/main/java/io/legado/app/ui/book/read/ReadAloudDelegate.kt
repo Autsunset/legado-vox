@@ -202,18 +202,15 @@ class ReadAloudDelegate(
     }
 
     fun openTtsEnginesAndVoices() {
-        host.updateState { it.copy(activeSheet = null) }
         host.emitEffect(ReadBookEffect.OpenTtsEnginesAndVoices)
     }
 
     fun openTtsCache() {
-        host.updateState { it.copy(activeSheet = null) }
         host.emitEffect(ReadBookEffect.OpenTtsCache)
     }
 
     fun openBookVoiceCasting() {
         ReadBook.book?.bookUrl?.let { bookUrl ->
-            host.updateState { it.copy(activeSheet = null) }
             host.emitEffect(ReadBookEffect.OpenBookVoiceCasting(bookUrl))
         }
     }
@@ -229,53 +226,11 @@ class ReadAloudDelegate(
         )
     }
 
-    // --- 四个数值选择弹层 ---
-
-    fun openPreDownloadNumPicker() {
-        host.updateState {
-            it.copy(
-                preDownloadNum = host.preDownloadNum,
-                activeSheet = ReadBookSheet.PreDownloadConfig,
-            )
-        }
-    }
-
-    fun openPreSynthesisConcurrencyPicker() {
-        host.updateState {
-            it.copy(
-                preSynthesisConcurrency =
-                    readAloudSettingsRepository.currentSettings.ttsPreSynthesisConcurrency,
-                activeSheet = ReadBookSheet.PreSynthesisConcurrencyConfig,
-            )
-        }
-    }
-
-    fun openParagraphIntervalPicker() {
-        host.updateState {
-            it.copy(
-                readAloudParagraphInterval =
-                    readAloudSettingsRepository.currentSettings.ttsParagraphInterval,
-                activeSheet = ReadBookSheet.ParagraphIntervalConfig,
-            )
-        }
-    }
-
-    fun openCacheCleanTimePicker() {
-        host.updateState {
-            it.copy(
-                audioCacheCleanTime = readAloudSettingsRepository.currentSettings.audioCacheCleanTime,
-                activeSheet = ReadBookSheet.AudioCacheCleanConfig,
-            )
-        }
-    }
-
     fun applyPreDownloadNum(value: Int) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
             readSettingsRepository.setPreDownloadNum(value)
         }
-        host.updateState {
-            it.copy(preDownloadNum = value, activeSheet = ReadBookSheet.ReadAloudConfig)
-        }
+        host.updateState { it.copy(preDownloadNum = value) }
     }
 
     fun applyPreSynthesisConcurrency(value: Int) {
@@ -284,18 +239,14 @@ class ReadAloudDelegate(
                 it.copy(ttsPreSynthesisConcurrency = value.coerceIn(1, 8))
             }
         }
-        host.updateState {
-            it.copy(preSynthesisConcurrency = value, activeSheet = ReadBookSheet.ReadAloudConfig)
-        }
+        host.updateState { it.copy(preSynthesisConcurrency = value.coerceIn(1, 8)) }
     }
 
     fun applyAudioCacheCleanTime(value: Int) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
             readAloudSettingsRepository.update { it.copy(audioCacheCleanTime = value) }
         }
-        host.updateState {
-            it.copy(audioCacheCleanTime = value, activeSheet = ReadBookSheet.ReadAloudConfig)
-        }
+        host.updateState { it.copy(audioCacheCleanTime = value) }
     }
 
     fun applyParagraphInterval(value: Int) {

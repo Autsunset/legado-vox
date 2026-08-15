@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -93,6 +94,8 @@ fun CloudTtsScreen(
     val pagerState =
         rememberPagerState(initialPage = state.selectedTab.ordinal) { CloudTtsTab.entries.size }
     val pagerScope = rememberCoroutineScope()
+    val voiceListState = rememberLazyListState()
+    val engineListState = rememberLazyListState()
     var showAddEngineSheet by remember { mutableStateOf(false) }
     var showHttpTtsImportSheet by remember { mutableStateOf(false) }
     var showHttpTtsUrlInput by remember { mutableStateOf(false) }
@@ -212,84 +215,138 @@ fun CloudTtsScreen(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
+            key = { CloudTtsTab.entries[it] },
         ) { page ->
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                state = if (page == CloudTtsTab.Voices.ordinal) {
+                    voiceListState
+                } else {
+                    engineListState
+                },
                 contentPadding = adaptiveContentPadding(
                     top = padding.calculateTopPadding() + 8.dp,
                     bottom = padding.calculateBottomPadding() + 96.dp,
                 ),
             ) {
                 if (page == CloudTtsTab.Voices.ordinal) {
-                if (state.voices.isEmpty() && !state.loading) {
-                    item { AppText(stringResource(R.string.cloud_tts_no_saved_voices), Modifier.padding(24.dp)) }
-                }
-                items(state.voices, key = { "voice:${it.id}" }) { voice ->
-                    TinyClickableSettingItem(
-                        title = voice.title,
-                        description = listOf(
-                            voice.summary,
-                            stringResource(R.string.cloud_tts_current_default_voice).takeIf { voice.selected },
-                        ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
-                        trailingContent = if (voice.editable) {{
-                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                MediumTonalButton(
-                                    onClick = { onIntent(CloudTtsIntent.EditVoice(voice.id)) },
-                                    icon = Icons.Default.Edit,
-                                    contentDescription = stringResource(R.string.edit),
-                                )
-                                MediumTonalButton(
-                                    onClick = { onIntent(CloudTtsIntent.RequestDeleteVoice(voice.id)) },
-                                    icon = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete),
-                                )
-                            }
-                        }} else null,
-                        onClick = {
-                            if (voice.selectable) onIntent(CloudTtsIntent.SetDefaultVoice(voice.id))
-                        },
-                    )
-                }
-            } else {
-                    item { EngineSectionTitle(R.string.cloud_tts_cloud_engines) }
-                items(state.engines, key = { "engine:${it.id}" }) { engine ->
-                    TinyClickableSettingItem(
-                        title = engine.title,
-                        description = listOf(
-                            engine.summary,
-                            stringResource(R.string.read_aloud_current_default_summary).takeIf { engine.selected },
-                        ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
-                        trailingContent = {
-                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                MediumTonalButton(
-                                    onClick = { onIntent(CloudTtsIntent.EditEngine(engine.id)) },
-                                    icon = Icons.Default.Edit,
-                                    contentDescription = stringResource(R.string.edit),
-                                )
-                                MediumTonalButton(
-                                    onClick = { onIntent(CloudTtsIntent.DeleteEngine(engine.id)) },
-                                    icon = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete),
-                                )
-                            }
-                        },
-                        onClick = {
-                            onIntent(
-                                CloudTtsIntent.SetDefaultEngine(
-                                    ReadAloudVoice.ENGINE_CLOUD,
-                                    engine.id
-                                )
+                    item("voice-default-guide") {
+                        AppText(
+                            text = stringResource(R.string.cloud_tts_voice_default_guide),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        )
+                    }
+                    if (state.voices.isEmpty() && !state.loading) {
+                        item("voice-empty") {
+                            TinyClickableSettingItem(
+                                title = stringResource(R.string.cloud_tts_no_saved_voices),
+                                description = stringResource(R.string.cloud_tts_open_engine_settings),
+                                onClick = {
+                                    onIntent(CloudTtsIntent.SelectTab(CloudTtsTab.Engines))
+                                },
                             )
-                        },
-                    )
-                }
+                        }
+                    }
+                    items(state.voices, key = { "voice:${it.id}" }) { voice ->
+                        TinyClickableSettingItem(
+                            title = voice.title,
+                            description = listOf(
+                                voice.summary,
+                                when {
+                                    voice.selected -> stringResource(
+                                        R.string.cloud_tts_current_default_voice
+                                    )
+                                    voice.selectable -> stringResource(
+                                        R.string.cloud_tts_set_default_voice_hint
+                                    )
+                                    else -> null
+                                },
+                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            trailingContent = if (voice.editable) {
+                                {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        MediumTonalButton(
+                                            onClick = {
+                                                onIntent(CloudTtsIntent.EditVoice(voice.id))
+                                            },
+                                            icon = Icons.Default.Edit,
+                                            contentDescription = stringResource(R.string.edit),
+                                        )
+                                        MediumTonalButton(
+                                            onClick = {
+                                                onIntent(
+                                                    CloudTtsIntent.RequestDeleteVoice(voice.id)
+                                                )
+                                            },
+                                            icon = Icons.Default.Delete,
+                                            contentDescription = stringResource(R.string.delete),
+                                        )
+                                    }
+                                }
+                            } else {
+                                null
+                            },
+                            onClick = {
+                                if (voice.selectable) {
+                                    onIntent(CloudTtsIntent.SetDefaultVoice(voice.id))
+                                }
+                            },
+                        )
+                    }
+                } else {
+                    item("engine-default-guide") {
+                        AppText(
+                            text = stringResource(R.string.cloud_tts_engine_default_guide),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        )
+                    }
+                    item { EngineSectionTitle(R.string.cloud_tts_cloud_engines) }
+                    items(state.engines, key = { "engine:${it.id}" }) { engine ->
+                        TinyClickableSettingItem(
+                            title = engine.title,
+                            description = listOf(
+                                engine.summary,
+                                stringResource(
+                                    R.string.read_aloud_current_default_summary
+                                ).takeIf { engine.selected },
+                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            trailingContent = {
+                                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    MediumTonalButton(
+                                        onClick = {
+                                            onIntent(CloudTtsIntent.EditEngine(engine.id))
+                                        },
+                                        icon = Icons.Default.Edit,
+                                        contentDescription = stringResource(R.string.edit),
+                                    )
+                                    MediumTonalButton(
+                                        onClick = {
+                                            onIntent(CloudTtsIntent.DeleteEngine(engine.id))
+                                        },
+                                        icon = Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.delete),
+                                    )
+                                }
+                            },
+                            onClick = {
+                                onIntent(
+                                    CloudTtsIntent.SetDefaultEngine(
+                                        ReadAloudVoice.ENGINE_CLOUD,
+                                        engine.id
+                                    )
+                                )
+                            },
+                        )
+                    }
                     item { EngineSectionTitle(R.string.cloud_tts_http_engines) }
                     items(state.httpEngines, key = { "http:${it.engineId}" }) { engine ->
                         TinyClickableSettingItem(
                             title = engine.title,
                             description = listOf(
                                 engine.summary,
-                                stringResource(R.string.read_aloud_current_default_summary).takeIf { engine.selected },
+                                stringResource(
+                                    R.string.read_aloud_current_default_summary
+                                ).takeIf { engine.selected },
                             ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
                             onClick = {
                                 onIntent(
@@ -305,38 +362,44 @@ fun CloudTtsScreen(
                             trailingContent = {
                                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                     MediumTonalButton(
-                                        onClick = { onIntent(CloudTtsIntent.EditHttpTts(engine.engineId)) },
+                                        onClick = {
+                                            onIntent(CloudTtsIntent.EditHttpTts(engine.engineId))
+                                        },
                                         icon = Icons.Default.Edit,
                                         contentDescription = stringResource(R.string.edit),
                                     )
                                     MediumTonalButton(
-                                        onClick = { onIntent(CloudTtsIntent.DeleteHttpTts(engine.engineId)) },
+                                        onClick = {
+                                            onIntent(CloudTtsIntent.DeleteHttpTts(engine.engineId))
+                                        },
                                         icon = Icons.Default.Delete,
                                         contentDescription = stringResource(R.string.delete),
                                     )
                                 }
-                        },
-                    )
-                }
+                            },
+                        )
+                    }
                     item { EngineSectionTitle(R.string.cloud_tts_system_engines) }
                     items(state.systemEngines, key = { "system:${it.engineId}" }) { engine ->
-                    TinyClickableSettingItem(
-                        title = engine.title,
-                        description = listOf(
-                            engine.summary,
-                            stringResource(R.string.read_aloud_current_default_summary).takeIf { engine.selected },
-                        ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
-                        onClick = {
-                            onIntent(
-                                CloudTtsIntent.SetDefaultEngine(
-                                    engine.engineType,
-                                    engine.engineId
+                        TinyClickableSettingItem(
+                            title = engine.title,
+                            description = listOf(
+                                engine.summary,
+                                stringResource(
+                                    R.string.read_aloud_current_default_summary
+                                ).takeIf { engine.selected },
+                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            onClick = {
+                                onIntent(
+                                    CloudTtsIntent.SetDefaultEngine(
+                                        engine.engineType,
+                                        engine.engineId
+                                    )
                                 )
-                            )
-                        },
-                    )
+                            },
+                        )
+                    }
                 }
-            }
             }
         }
     }

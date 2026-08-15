@@ -288,6 +288,7 @@ sealed interface BookInfoCallbackAction {
 enum class BookInfoMenuAction {
     CustomButton,
     Edit,
+    RemoveFromBookshelf,
     Share,
     Upload,
     SyncRemote,

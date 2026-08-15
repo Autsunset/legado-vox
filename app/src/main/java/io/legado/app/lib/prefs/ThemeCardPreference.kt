@@ -3,13 +3,12 @@ package io.legado.app.lib.prefs
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.util.AttributeSet
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.ViewCompat
 import androidx.preference.PreferenceViewHolder
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,20 +17,24 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import io.legado.app.R
 import io.legado.app.constant.PreferKey
+import io.legado.app.domain.gateway.AppShellSettingsGateway
 import io.legado.app.domain.gateway.ThemeSettingsGateway
-import io.legado.app.ui.config.themeConfig.ThemeConfig
-import io.legado.app.utils.getPrefString
-import io.legado.app.utils.toastOnUi
+import io.legado.app.ui.theme.ThemeEngine
+import io.legado.app.ui.theme.ThemeResolver
 import io.legado.app.utils.activity
+import io.legado.app.utils.isNightMode
+import io.legado.app.utils.toastOnUi
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
-import splitties.init.appCtx
 
-@SuppressLint("ResourceType")
 class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
 
     private val themeSettingsGateway by lazy {
         GlobalContext.get().get<ThemeSettingsGateway>()
+    }
+    private val appShellSettingsGateway by lazy {
+        GlobalContext.get().get<AppShellSettingsGateway>()
     }
 
     private var entries: Array<CharSequence> = context.resources.getTextArray(R.array.themes_item)
@@ -51,13 +54,43 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
 
+        currentValue = themeSettingsGateway.currentSettings.appTheme
         val recyclerView = holder.findViewById(R.id.recyclerView) as RecyclerView
+        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+            ?: LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false).also {
+                recyclerView.layoutManager = it
+            }
+        val adapter = recyclerView.adapter as? ThemeAdapter
+            ?: ThemeAdapter().also { recyclerView.adapter = it }
 
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = ThemeAdapter()
+        recyclerView.clearOnScrollListeners()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                rememberScrollPosition(recyclerView)
+            }
+        })
+        if (retainedFirstVisiblePosition != RecyclerView.NO_POSITION) {
+            layoutManager.scrollToPositionWithOffset(
+                retainedFirstVisiblePosition,
+                retainedFirstVisibleOffset,
+            )
+        }
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun rememberScrollPosition(recyclerView: RecyclerView) {
+        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return
+        val position = layoutManager.findFirstVisibleItemPosition()
+        if (position == RecyclerView.NO_POSITION) return
+        retainedFirstVisiblePosition = position
+        retainedFirstVisibleOffset = layoutManager.findViewByPosition(position)?.let {
+            layoutManager.getDecoratedLeft(it) - recyclerView.paddingStart
+        } ?: 0
     }
 
     private inner class ThemeAdapter : RecyclerView.Adapter<ThemeViewHolder>() {
+        private val colorCache = mutableMapOf<String, List<Int>>()
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThemeViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_theme_card, parent, false)
             return ThemeViewHolder(view)
@@ -72,7 +105,10 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
             holder.card.isChecked = (value == currentValue)
             holder.card.contentDescription = label
 
-            val colors = getThemeColors(value)
+            val colors = colorCache.getOrPut(value) { getThemeColors(value) }
+            val currentThemeColors = colorCache.getOrPut(currentValue) {
+                getThemeColors(currentValue)
+            }
             holder.colorTop.setCardBackgroundColor(colors[0])
             holder.colorBook.setCardBackgroundColor(colors[1])
             holder.colorPin.setCardBackgroundColor(colors[2])
@@ -83,6 +119,9 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
             val isSelected = (value == currentValue)
             holder.background.strokeColor = if (isSelected) colors[4] else colors[7]
             holder.card.checkedIconTint = ColorStateList.valueOf(colors[2])
+            holder.label.setTextColor(
+                if (isSelected) currentThemeColors[4] else currentThemeColors[0]
+            )
             ViewCompat.setStateDescription(
                 holder.card,
                 context.getString(if (isSelected) R.string.a11y_selected else R.string.a11y_not_selected)
@@ -90,32 +129,34 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
 
 
             holder.card.setOnClickListener {
-                if (value != currentValue) {
-                    if (value == "13") {
-                        val hasLightBg = !ThemeConfig.bgImageLight.isNullOrEmpty()
-                        val hasDarkBg = !ThemeConfig.bgImageDark.isNullOrEmpty()
-                        if (!hasLightBg || !hasDarkBg) {
-                            context.toastOnUi(R.string.transparent_theme_alarm)
-                            return@setOnClickListener
-                        } else {
-                        }
+                if (value == currentValue) return@setOnClickListener
+                if (value == "13") {
+                    val settings = themeSettingsGateway.currentSettings
+                    val hasLightBg = !settings.backgroundImageLight.isNullOrEmpty()
+                    val hasDarkBg = !settings.backgroundImageDark.isNullOrEmpty()
+                    if (!hasLightBg || !hasDarkBg) {
+                        context.toastOnUi(R.string.transparent_theme_alarm)
+                        return@setOnClickListener
                     }
-                    currentValue = value
-                    callChangeListener(value)
-                    holder.itemView.activity?.lifecycleScope?.launch {
-                        themeSettingsGateway.update {
-                            it.copy(
-                                appTheme = value,
-                                containerOpacity = if (value == "13") {
-                                    0
-                                } else {
-                                    it.containerOpacity
-                                },
-                            )
-                        }
-                    }
-                    notifyDataSetChanged()
                 }
+                if (!callChangeListener(value)) return@setOnClickListener
+
+                val activity = holder.itemView.activity ?: return@setOnClickListener
+                (holder.itemView.parent as? RecyclerView)?.let(::rememberScrollPosition)
+                currentValue = value
+                activity.lifecycleScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                    themeSettingsGateway.update {
+                        it.copy(
+                            appTheme = value,
+                            containerOpacity = if (value == "13") {
+                                0
+                            } else {
+                                it.containerOpacity
+                            },
+                        )
+                    }
+                }
+                notifyDataSetChanged()
             }
         }
 
@@ -123,39 +164,33 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
         override fun getItemCount(): Int = entries.size
     }
 
-    private val themeResIdMap = mapOf(
-        "0" to R.style.Theme_Base_Dycolors,
-        "1" to R.style.Theme_Base_GR,
-        "2" to R.style.Theme_Base_Lemon,
-        "3" to R.style.Theme_Base_WH,
-        "4" to R.style.Theme_Base_Elink,
-        "5" to R.style.Theme_Base_Sora,
-        "6" to R.style.Theme_Base_August,
-        "7" to R.style.Theme_Base_Carlotta,
-        "8" to R.style.Theme_Base_Koharu,
-        "9" to R.style.Theme_Base_Yuuka,
-        "10" to R.style.Theme_Base_Phoebe,
-        "11" to R.style.Theme_Base_Mujika,
-        "12" to R.style.ThemeOverlay_WhiteBackground,
-        "13" to R.style.AppTheme_Transparent)
-
     private fun getThemeColors(value: String): List<Int> {
-        val themeResId = themeResIdMap[value] ?: return listOf(Color.GRAY, Color.GRAY, Color.GRAY, Color.GRAY)
-
-        val themedContext = ContextThemeWrapper(context, themeResId)
-        val attrs = intArrayOf(
-            com.google.android.material.R.attr.colorOnSurface,
-            com.google.android.material.R.attr.colorSecondaryContainer,
-            com.google.android.material.R.attr.colorSecondaryVariant,
-            com.google.android.material.R.attr.colorSurfaceContainer,
-            androidx.appcompat.R.attr.colorPrimary,
-            com.google.android.material.R.attr.colorOnSurfaceVariant,
-            com.google.android.material.R.attr.colorSurface,
-            com.google.android.material.R.attr.colorSecondaryContainer,
+        val settings = themeSettingsGateway.currentSettings
+        val isDark = when (appShellSettingsGateway.currentSettings.themeMode) {
+            "1" -> false
+            "2" -> true
+            else -> context.resources.configuration.isNightMode
+        }
+        val colorScheme = ThemeEngine.getColorScheme(
+            context = context,
+            mode = ThemeResolver.resolveThemeMode(value),
+            darkTheme = isDark,
+            isAmoled = settings.isPureBlack,
+            paletteStyle = settings.paletteStyle,
+            materialVersion = settings.materialVersion,
+            customSeedColor = if (isDark) settings.customNightPrimary else settings.customPrimary,
+            customContrast = settings.customContrast,
         )
-
-        val ta = themedContext.obtainStyledAttributes(attrs)
-        return List(attrs.size) { ta.getColor(it, Color.GRAY) }.also { ta.recycle() }
+        return listOf(
+            colorScheme.onSurface.toArgb(),
+            colorScheme.secondaryContainer.toArgb(),
+            colorScheme.secondary.toArgb(),
+            colorScheme.surfaceContainer.toArgb(),
+            colorScheme.primary.toArgb(),
+            colorScheme.onSurfaceVariant.toArgb(),
+            colorScheme.surface.toArgb(),
+            colorScheme.secondaryContainer.toArgb(),
+        )
     }
 
 
@@ -170,5 +205,10 @@ class ThemeCardPreference(context: Context, attrs: AttributeSet) : Preference(co
         val colorBottomRight: MaterialCardView = view.findViewById(R.id.right_rect)
         val colorBottomLeft : MaterialCardView = view.findViewById(R.id.left_circle)
         val background : MaterialCardView = view.findViewById(R.id.cardView)
+    }
+
+    private companion object {
+        var retainedFirstVisiblePosition = RecyclerView.NO_POSITION
+        var retainedFirstVisibleOffset = 0
     }
 }

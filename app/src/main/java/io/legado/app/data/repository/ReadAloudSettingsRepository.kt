@@ -43,7 +43,7 @@ class ReadAloudSettingsRepository : ReadAloudSettingsGateway {
 
 internal fun Preferences.toReadAloudSettings(): ReadAloudSettings = ReadAloudSettings(
     ttsEngine = compatDsString(PreferKey.ttsEngine),
-    ttsParagraphInterval = compatDsValue(ReadAloudKeys.TtsParagraphInterval, 0),
+    ttsParagraphInterval = compatDsValue(ReadAloudKeys.TtsParagraphInterval, 100),
     audioCacheCleanTime = compatDsValue(ReadAloudKeys.AudioCacheCleanTime, 10),
     ignoreAudioFocus = compatDsValue(ReadAloudKeys.IgnoreAudioFocus, false),
     mediaButtonOnExit = compatDsValue(ReadAloudKeys.MediaButtonOnExit, true),

@@ -27,6 +27,7 @@
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="${app_name}"
         android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true"
@@ -190,7 +191,7 @@
         </activity>
         <activity
             android:name=".ui.welcome.WelcomeActivity"
-            android:configChanges="locale|layoutDirection|uiMode|screenLayout"
+            android:configChanges="locale|layoutDirection|screenLayout"
             android:enableOnBackInvokedCallback="true"
             android:exported="false"
             android:windowSoftInputMode="adjustPan|stateHidden" />
@@ -456,7 +457,7 @@
             android:exported="true"
             android:foregroundServiceType="dataSync"
             android:icon="@drawable/ic_web_service_noti"
-            android:label="legado Web Service"
+            android:label="@string/web_service"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             >
             <intent-filter>

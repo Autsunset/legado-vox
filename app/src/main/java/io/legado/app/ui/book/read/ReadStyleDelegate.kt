@@ -134,6 +134,14 @@ class ReadStyleDelegate(
         )
     }
 
+    fun applyBuiltInBackground(fileName: String) {
+        readStyleGateway.updateCurrentStyle(
+            ReadStyleMutation.Background(type = 1, value = fileName)
+        )
+        readStyleGateway.save()
+        emitConfigUpdate(ConfigUpdateAction.UpdateBackground)
+    }
+
     fun openBgTextConfig(index: Int) {
         scope.launch {
             readSettingsRepository.setStyleSelect(ReadSessionState.isComic, index)

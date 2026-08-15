@@ -159,6 +159,35 @@ class BuildSpeechPlanUseCaseTest {
         assertEquals(characterVoice, plan.voice)
     }
 
+    @Test
+    fun `single speaker reading uses preferred default voice for every segment`() = runBlocking {
+        val defaultVoice = voice("default")
+        val narratorVoice = voice("narrator")
+        val gateway = FakeVoiceGateway(
+            voices = listOf(defaultVoice, narratorVoice),
+            bindings = listOf(
+                binding(
+                    BookVoiceBinding.SUBJECT_NARRATOR,
+                    BookVoiceBinding.SUBJECT_NARRATOR,
+                    narratorVoice.id,
+                ),
+            ),
+        )
+
+        val plan = BuildSpeechPlanUseCase(gateway)(
+            bookUrl = "book",
+            segments = listOf(
+                segment(SpeechRoleType.Narrator, null),
+                segment(SpeechRoleType.Character, "character-1"),
+            ),
+            preferredDefaultVoiceId = defaultVoice.id,
+            useMultiSpeaker = false,
+        )
+
+        assertEquals(listOf(defaultVoice, defaultVoice), plan.map { it.voice })
+        assertEquals(listOf(emptyList<ReadAloudVoice>(), emptyList()), plan.map { it.fallbackVoices })
+    }
+
 
     private fun voice(id: String) = ReadAloudVoice(
         id = id,

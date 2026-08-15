@@ -1206,6 +1206,7 @@ class BookInfoViewModel(
                 )
             )
             BookInfoMenuAction.Edit -> openEdit()
+            BookInfoMenuAction.RemoveFromBookshelf -> onShelfClick()
             BookInfoMenuAction.Share -> {
                 val bookJson = GSON.toJson(book)
                 emitEffect(

@@ -177,7 +177,9 @@ fun ReadAloudScreen(
                                 playerState = playerState,
                                 onIntent = onIntent,
                                 onPlayerIntent = onPlayerIntent,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 16.dp)
                             )
                         }
 

@@ -1286,14 +1286,9 @@ class ReadBookViewModel(
             is ReadBookIntent.ExitWithoutAddingCurrentBookToBookshelf -> removeCurrentNotShelfBookAndFinish()
 
             is ReadBookIntent.ShowReadAloudConfig -> readAloudDelegate.openConfigSheet()
-            is ReadBookIntent.OpenPreDownloadNumPicker ->
-                readAloudDelegate.openPreDownloadNumPicker()
-            is ReadBookIntent.OpenPreSynthesisConcurrencyPicker ->
-                readAloudDelegate.openPreSynthesisConcurrencyPicker()
-            is ReadBookIntent.OpenParagraphIntervalPicker ->
-                readAloudDelegate.openParagraphIntervalPicker()
-            is ReadBookIntent.OpenCacheCleanTimePicker ->
-                readAloudDelegate.openCacheCleanTimePicker()
+            is ReadBookIntent.SelectReadAloudConfigTab -> _uiState.update {
+                it.copy(readAloudConfigTab = intent.tab)
+            }
             is ReadBookIntent.ApplyPreDownloadNum ->
                 readAloudDelegate.applyPreDownloadNum(intent.value)
             is ReadBookIntent.ApplyPreSynthesisConcurrency ->
@@ -1399,6 +1394,8 @@ class ReadBookViewModel(
             is ReadBookIntent.AddReadStyleConfig -> styleDelegate.addStyle()
             is ReadBookIntent.DeleteCurrentReadStyleConfig -> styleDelegate.deleteCurrentStyle()
             is ReadBookIntent.ApplyPresetTheme -> styleDelegate.applyPresetTheme(intent.presetIndex)
+            is ReadBookIntent.ApplyBuiltInBackground ->
+                styleDelegate.applyBuiltInBackground(intent.fileName)
             is ReadBookIntent.OpenBgTextConfig -> styleDelegate.openBgTextConfig(intent.index)
 
             is ReadBookIntent.ToggleDayNight -> styleDelegate.toggleDayNight()

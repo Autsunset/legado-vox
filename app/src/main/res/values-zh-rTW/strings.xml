@@ -2,8 +2,8 @@
     <!--App-->
     <string name="app_name">閱讀 Vox</string>
     <string name="app_name_a">閱讀 Vox·A</string>
-    <string name="receiving_shared_label">閱讀 Vox·搜尋</string>
-    <string name="tip_perm_request_storage">閱讀需要存取記憶卡權限，請前往「設定」—「應用程式權限」—打開所需權限</string>
+    <string name="receiving_shared_label">閱讀 Vox · 搜尋</string>
+    <string name="tip_perm_request_storage">閱讀 Vox 需要存取儲存空間，請前往「設定」—「應用程式權限」開啟所需權限</string>
 
     <!--Other-->
     <string name="menu_backup">備份</string>
@@ -98,12 +98,8 @@
     <string name="offline_cache_t">離線快取</string>
     <string name="offline_cache_s">快取選擇的章節到本機</string>
     <string name="change_origin">換源</string>
-    <string name="about_description">
-        \u3000\u3000這是一款使用Kotlin全新開發的開源的閱讀軟體，歡迎您的加入。
-    </string>
-    <string name="app_share_description">
-        閱讀3.0下載網址：\nhttps://github.com/gedoor/legado/releases
-    </string>
+    <string name="about_description">獨立維護的閱讀與聽書應用程式</string>
+    <string name="app_share_description">Legado Vox 版本發佈：\nhttps://github.com/Autsunset/legado-vox/releases</string>
     <string name="version_name">Version %s</string>
     <string name="pt_background_verification">後臺校驗書源</string>
     <string name="ps_background_verification">打開後可以在校驗書源時自由操作</string>
@@ -233,7 +229,10 @@
     <string name="import_select_book">匯入選擇書籍</string>
     <string name="threads_num_title">更新和搜尋執行緒數，太多會卡頓</string>
     <string name="change_icon">切換圖示</string>
-    <string name="remove_from_bookshelf">刪除書籍</string>
+    <string name="remove_from_bookshelf">移出書架</string>
+    <string name="remove_selected_books_message">確定將選取的 %1$d 本書移出書架嗎？</string>
+    <string name="delete_online_book_cache">同時刪除網路書籍的離線快取</string>
+    <string name="removed_books_from_bookshelf">已將 %1$d 本書移出書架</string>
     <string name="already_in_bookshelf">已在書架</string>
     <string name="start_read">開始閱讀</string>
     <string name="data_loading">載入資料中…</string>
@@ -773,11 +772,11 @@
     <string name="contact">聯繫我們</string>
     <string name="license">開源許可</string>
     <string name="other">其它</string>
-    <string name="official_account">legado-top</string>
-    <string name="follow_official_account">關注公眾號</string>
+    <string name="official_account">Legado Vox</string>
+    <string name="follow_official_account">造訪 Legado Vox 專案</string>
     <string name="wechat">微信</string>
     <string name="thanks">您的支援是我更新的動力</string>
-    <string name="about_official_account">公眾號[开源阅读]</string>
+    <string name="about_official_account">Legado Vox</string>
     <string name="source_auto_changing">正在自動換源</string>
     <string name="click_to_apply">點擊加入</string>
     <string name="middle">中</string>
@@ -823,7 +822,7 @@
     <string name="starting_download">正在啟動下載</string>
     <string name="already_in_download">該書已在下載列表</string>
     <string name="click_to_open">點擊打開</string>
-    <string name="follow_public_account_summary">關注[legado-top]點擊廣告支持我</string>
+    <string name="follow_public_account_summary">查看 Legado Vox 的版本發佈與專案資訊</string>
     <string name="weChat_appreciation_code">微信讚賞碼</string>
     <string name="alipay">支付寶</string>
     <string name="alipay_red_envelope_search_code">支付寶紅包搜尋碼</string>
@@ -856,7 +855,7 @@
     <string name="language">語言</string>
     <string name="import_rss_source">匯入訂閱源</string>
     <string name="donate_summary">您的支援是我更新的動力</string>
-    <string name="about_summary">公眾號[开源阅读软件]</string>
+    <string name="about_summary">閱讀 Vox</string>
     <string name="read_record">閱讀記錄</string>
     <string name="del_read_record">刪除閲讀記錄</string>
     <string name="read_record_summary">閱讀時間記錄</string>
@@ -1173,7 +1172,7 @@
     <string name="tip_divider_color_shared_desc">页眉与页脚共用</string>
     <string name="same_title_removed">移除重复标题</string>
     <string name="update_book_fail">更新失败</string>
-    <string name="notification_permission_rationale">阅读需要发送通知来显示朗读控制和下载进度</string>
+    <string name="notification_permission_rationale">閱讀 Vox 需要通知權限，以顯示聽書控制和下載進度。</string>
     <string name="webdav_after_local_restore_confirm">webDav书源比本地新,是否恢复</string>
     <string name="c_whitelist">白名单(contentWhitelist)</string>
     <string name="c_blacklist">黑名单(contentBlacklist)</string>
@@ -1287,7 +1286,7 @@
     <string name="font_weight_custom_description">自訂字重僅適用於可變字重的字體</string>
     <string name="keep_swipe_tip">继续滑动以加载下一章…</string>
     <string name="enable_optimize_render">启用绘制优化</string>
-    <string name="ignore_battery_permission_rationale">阅读需要请求后台权限以保持服务正常运行</string>
+    <string name="ignore_battery_permission_rationale">閱讀 Vox 需要背景執行權限，以維持聽書、下載和 Web 服務正常運作。</string>
     <string name="simulated_reading">模擬追讀</string>
     <string name="switch_on">開關</string>
     <string name="start_from">起始日期</string>
@@ -2283,7 +2282,7 @@
     <string name="sort_old_first">最舊優先</string>
     <string name="sort_new_first">最新優先</string>
     <string name="drag_disabled_in_sort_mode">此排序模式下禁用拖曳</string>
-    <string name="selection_mode">選擇模式</string>
+    <string name="selection_mode">多選</string>
     <string name="folder_layout_mode">資料夾佈局模式</string>
     <string name="list_cover_width">列表封面寬度</string>
     <string name="folder_list_style">資料夾列表樣式</string>
@@ -2567,8 +2566,8 @@
     <string name="read_aloud_default_engine_summary">未指定角色時使用 · %1$s</string>
     <string name="read_aloud_default_engine_scope_summary">未配對角色時使用；系統 TTS 或 HTTP TTS</string>
     <string name="read_aloud_current_default_summary">目前預設 · 未啟用多角色朗讀時使用</string>
-    <string name="read_aloud_engines_and_voices">朗讀引擎與音色</string>
-    <string name="read_aloud_engines_and_voices_summary">管理系統、HTTP 和雲端 TTS 音色</string>
+    <string name="read_aloud_engines_and_voices">預設引擎與音色</string>
+    <string name="read_aloud_engines_and_voices_summary">選擇單角色朗讀使用的引擎和音色，並管理多角色配音</string>
     <string name="read_aloud_character_casting">人物與角色配音</string>
     <string name="read_aloud_character_casting_summary">將人物、旁白和未知對白綁定到音色</string>
     <string name="read_aloud_other_settings">其他朗讀設定</string>
@@ -2625,7 +2624,12 @@
     <string name="cloud_tts_choose_engine">選擇引擎並新增音色</string>
     <string name="cloud_tts_select_voice">選擇音色</string>
     <string name="cloud_tts_saved_voices">已儲存音色</string>
-    <string name="cloud_tts_no_saved_voices">尚未儲存音色。請先從上方選擇一個引擎。</string>
+    <string name="cloud_tts_no_saved_voices">尚未儲存音色</string>
+    <string name="cloud_tts_open_engine_settings">前往「引擎」新增並測試雲端 TTS 引擎，然後儲存音色。</string>
+    <string name="cloud_tts_voice_default_guide">點擊雲端 TTS 音色即可設為預設；單角色朗讀時，整章都會使用該音色。</string>
+    <string name="cloud_tts_engine_default_guide">點擊引擎即可設為預設；雲端 TTS 引擎需先儲存至少一個音色。</string>
+    <string name="cloud_tts_set_default_voice_hint">點擊設為預設音色</string>
+    <string name="cloud_tts_current_default_voice">目前預設音色 · 單角色朗讀使用</string>
     <string name="cloud_tts_engines">雲端 TTS 引擎</string>
     <string name="cloud_tts_no_engines">尚未設定雲端 TTS 引擎</string>
     <string name="cloud_tts_available_engines">可用朗讀引擎</string>

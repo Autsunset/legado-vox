@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#2E2D3D</color>
+    <color name="ic_launcher_background">#5956E6</color>
+    <color name="launcher_original_background">#161437</color>
+    <color name="launcher_candidate_a_background">#244499</color>
+    <color name="launcher_candidate_b_background">#E0A4D0</color>
+    <color name="launcher_candidate_c_background">#0C1424</color>
     <color name="ic_launcher_background_w">#F2F1F6</color>
     <color name="ic_st_aloud_background">#D7D7D7</color>
 

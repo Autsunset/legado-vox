@@ -138,6 +138,11 @@ class CloudTtsViewModel(
                     }.toImmutableList(),
                     voices = savedVoices.map(::voiceItem).toImmutableList(),
                     availableEngines = engineOptions(),
+                    selectedTab = if (state.loading && allEngines.isEmpty()) {
+                        CloudTtsTab.Engines
+                    } else {
+                        state.selectedTab
+                    },
                 ) }
             }
         }

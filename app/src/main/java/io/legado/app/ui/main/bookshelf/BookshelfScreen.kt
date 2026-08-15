@@ -54,6 +54,7 @@ import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GridView
@@ -65,6 +66,7 @@ import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.outlined.ViewCarousel
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -516,6 +518,21 @@ fun BookshelfScreen(
                             },
                             imageVector = Icons.Default.Bookmarks,
                             contentDescription = stringResource(R.string.move_to_group)
+                        )
+                    }
+                    AnimatedVisibility(visible = isEditMode) {
+                        TopBarActionButton(
+                            onClick = {
+                                if (selectedBookUrls.isNotEmpty()) {
+                                    onIntent(
+                                        BookshelfIntent.ShowOverlay(
+                                            BookshelfOverlay.BatchRemoveConfirmDialog
+                                        )
+                                    )
+                                }
+                            },
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.remove_from_bookshelf)
                         )
                     }
 
@@ -1180,6 +1197,14 @@ private fun BookshelfOverlays(
     exportLauncher: ManagedActivityResultLauncher<String, Uri?>,
     clearSelection: () -> Unit
 ) {
+    val selectedBooks = remember(uiState.items, selectedBookUrls) {
+        uiState.items.filter { it.book.bookUrl in selectedBookUrls }
+    }
+    val hasLocalBookInDeleteTarget = selectedBooks.any { it.book.isLocal }
+    val hasOnlineBookInDeleteTarget = selectedBooks.any { !it.book.isLocal }
+    var deleteOriginalBookFile by remember(activeOverlay) { mutableStateOf(false) }
+    var deleteOnlineBookCache by remember(activeOverlay) { mutableStateOf(false) }
+
     BookshelfConfigSheet(
         show = activeOverlay == BookshelfOverlay.ConfigSheet,
         settings = uiState.settings,
@@ -1279,6 +1304,53 @@ private fun BookshelfOverlays(
         },
         dismissText = stringResource(android.R.string.cancel),
         onDismiss = { onIntent(BookshelfIntent.DismissOverlay) }
+    )
+
+    AppAlertDialog(
+        show = activeOverlay == BookshelfOverlay.BatchRemoveConfirmDialog,
+        onDismissRequest = { onIntent(BookshelfIntent.DismissOverlay) },
+        title = stringResource(R.string.remove_from_bookshelf),
+        content = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                AppText(
+                    text = stringResource(
+                        R.string.remove_selected_books_message,
+                        selectedBookUrls.size,
+                    )
+                )
+                if (hasLocalBookInDeleteTarget) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = deleteOriginalBookFile,
+                            onCheckedChange = { deleteOriginalBookFile = it },
+                        )
+                        AppText(text = stringResource(R.string.delete_book_file))
+                    }
+                }
+                if (hasOnlineBookInDeleteTarget) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = deleteOnlineBookCache,
+                            onCheckedChange = { deleteOnlineBookCache = it },
+                        )
+                        AppText(text = stringResource(R.string.delete_online_book_cache))
+                    }
+                }
+            }
+        },
+        confirmText = stringResource(android.R.string.ok),
+        onConfirm = {
+            onIntent(BookshelfIntent.DismissOverlay)
+            onIntent(
+                BookshelfIntent.DeleteBooks(
+                    bookUrls = selectedBookUrls,
+                    deleteOriginal = deleteOriginalBookFile,
+                    deleteCache = deleteOnlineBookCache,
+                )
+            )
+        },
+        dismissText = stringResource(android.R.string.cancel),
+        onDismiss = { onIntent(BookshelfIntent.DismissOverlay) },
     )
 
     if (uiState.isLoading) {

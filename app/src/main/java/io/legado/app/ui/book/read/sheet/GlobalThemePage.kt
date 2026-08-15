@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -283,6 +284,32 @@ fun GlobalThemePage(
                             },
                         )
                     }
+                    items(
+                        items = ReadBackgroundPreset.items,
+                        key = { "built-in-background:${it.bgValue}" },
+                    ) { preset ->
+                        val currentBackground = when (
+                            ReadStyleResolver.currentMode(isNightTheme)
+                        ) {
+                            ReadStyleResolver.ReadStyleMode.Day ->
+                                styleConfig.bgType to styleConfig.bgStr
+                            ReadStyleResolver.ReadStyleMode.Night ->
+                                styleConfig.bgTypeNight to styleConfig.bgStrNight
+                            ReadStyleResolver.ReadStyleMode.EInk ->
+                                styleConfig.bgTypeEInk to styleConfig.bgStrEInk
+                        }
+                        StyleCard(
+                            config = preset,
+                            isSelected = currentBackground == (1 to preset.bgValue),
+                            isNightTheme = isNightTheme,
+                            onClick = {
+                                onIntent(ReadBookIntent.ApplyBuiltInBackground(preset.bgValue))
+                            },
+                            onLongClick = {
+                                onIntent(ReadBookIntent.ApplyBuiltInBackground(preset.bgValue))
+                            },
+                        )
+                    }
                     item {
                         NormalCard(
                             onClick = {
@@ -419,7 +446,7 @@ fun StyleCard(
         }
     )
     val name = config.name.ifBlank { stringResource(R.string.text_bg_style) }
-    val bgPath = ReadStyleResolver.backgroundPath(bgType, bgValue)
+    val bgModel = ReadBackgroundPreset.previewModel(bgType, bgValue)
 
     NormalCard(
         modifier = Modifier
@@ -431,18 +458,23 @@ fun StyleCard(
         onLongClick = onLongClick,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (bgPath != null) {
+            if (bgModel != null) {
                 AsyncImage(
-                    model = bgPath,
+                    model = bgModel,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.25f))
                 )
             }
             AppText(
                 text = name,
                 style = LegadoTheme.typography.labelSmall,
-                color = textColor,
+                color = if (bgModel == null) textColor else Color.White,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

@@ -35,7 +35,9 @@ import io.legado.app.constant.NotificationId
 import io.legado.app.constant.PreferKey
 import io.legado.app.constant.Status
 import io.legado.app.domain.model.PlaybackTimer
+import io.legado.app.domain.gateway.ReadAloudVoiceGateway
 import io.legado.app.help.MediaHelp
+import io.legado.app.domain.model.readaloud.ReadAloudVoice
 import io.legado.app.domain.model.readaloud.SpeechPlanItem
 import io.legado.app.domain.model.readaloud.SpeechAnalysisMode
 import io.legado.app.domain.model.readaloud.ReadAloudPlaybackCursor
@@ -256,6 +258,11 @@ abstract class BaseReadAloudService : BaseService(),
         }
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        // Keep audiobook playback alive when the user removes the UI task from Recents.
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             IntentAction.play -> newReadAloud(
@@ -377,7 +384,22 @@ abstract class BaseReadAloudService : BaseService(),
         chapterIndex: Int,
         textChapter: TextChapter,
     ): List<SpeechPlanItem> {
-        if (bookUrl.isEmpty() || !ReadConfig.useMultiSpeaker) return emptyList()
+        if (bookUrl.isEmpty()) return emptyList()
+        val useMultiSpeaker = ReadConfig.useMultiSpeaker
+        val preferredDefaultVoiceId = if (
+            !useMultiSpeaker &&
+            ReadAloud.coordinatorDefaultEngineType == ReadAloudVoice.ENGINE_CLOUD
+        ) {
+            val voiceGateway: ReadAloudVoiceGateway = get(ReadAloudVoiceGateway::class.java)
+            voiceGateway.getEnabledVoices().firstOrNull { voice ->
+                voice.engineType == ReadAloudVoice.ENGINE_CLOUD &&
+                    voice.engineId == ReadAloud.coordinatorDefaultEngineId &&
+                    voice.speakerId == ReadAloud.coordinatorDefaultSpeakerId
+            }?.id
+        } else {
+            null
+        }
+        if (!useMultiSpeaker && preferredDefaultVoiceId == null) return emptyList()
         val prepareSpeechPlan: PrepareChapterSpeechPlanUseCase =
             get(PrepareChapterSpeechPlanUseCase::class.java)
         return runCatching {
@@ -385,8 +407,13 @@ abstract class BaseReadAloudService : BaseService(),
                 bookUrl = bookUrl,
                 chapterIndex = chapterIndex,
                 paragraphs = textChapter.toCanonicalSpeechParagraphs(),
-                analysisMode = SpeechAnalysisMode.fromStorage(ReadConfig.speechAnalysisMode),
-                useMultiSpeaker = ReadConfig.useMultiSpeaker,
+                preferredDefaultVoiceId = preferredDefaultVoiceId,
+                analysisMode = if (useMultiSpeaker) {
+                    SpeechAnalysisMode.fromStorage(ReadConfig.speechAnalysisMode)
+                } else {
+                    SpeechAnalysisMode.Rule
+                },
+                useMultiSpeaker = useMultiSpeaker,
             )
         }.onFailure {
             AppLog.put("生成多角色朗读计划失败，使用原朗读方式\n${it.localizedMessage}", it)

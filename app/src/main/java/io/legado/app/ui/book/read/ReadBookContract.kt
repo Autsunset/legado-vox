@@ -43,6 +43,11 @@ sealed interface ReminderType {
     data class DayNightReminder(val targetIsNight: Boolean) : ReminderType
 }
 
+enum class ReadAloudConfigTab {
+    General,
+    Voice,
+}
+
 @Stable
 data class ReadBookMenuState(
     val visible: Boolean = false,
@@ -290,7 +295,8 @@ data class ReadBookUiState(
     val speechAnalysisMode: String = "rule",
     val useMultiSpeaker: Boolean = true,
     val defaultReadAloudInterface: String = ReadAloudSettingsRepository.DEFAULT_INTERFACE_CLASSIC,
-    val readAloudParagraphInterval: Int = 0,
+    val readAloudParagraphInterval: Int = 100,
+    val readAloudConfigTab: ReadAloudConfigTab = ReadAloudConfigTab.General,
     // Style config (reactive state for ReadBookConfig)
     val styleConfig: ReadBookStyleConfig = ReadBookStyleConfig(),
     val sheetConfig: ReadSheetConfigUiState = ReadSheetConfigUiState(),
@@ -420,7 +426,7 @@ internal val ReadBookButtonIds = listOf(
 
 internal val MoreActionIds = listOf(
     "change_source", "refresh", "download", "edit_content", "add_bookmark",
-    "text_processing", "reverse_content", "re_segment",
+    "ai_summary", "ai_rewrite", "text_processing", "reverse_content", "re_segment",
     "del_ruby", "del_h", "toc_rule", "charset", "image_style", "page_anim",
     "simulated_reading", "get_progress", "cover_progress", "highlight_rule",
     "bottom_button_config", "log",
@@ -622,6 +628,7 @@ sealed interface ReadBookIntent {
     data object AddReadStyleConfig : ReadBookIntent
     data object DeleteCurrentReadStyleConfig : ReadBookIntent
     data class ApplyPresetTheme(val presetIndex: Int) : ReadBookIntent
+    data class ApplyBuiltInBackground(val fileName: String) : ReadBookIntent
 
     // Bookshelf
     data object RemoveFromBookshelf : ReadBookIntent
@@ -745,12 +752,9 @@ sealed interface ReadBookIntent {
     data object ConfirmAddCurrentBookToBookshelf : ReadBookIntent
     data object ExitWithoutAddingCurrentBookToBookshelf : ReadBookIntent
 
-    // Read aloud config (needs Activity for DialogFragment)
+    // Read aloud config
     data object ShowReadAloudConfig : ReadBookIntent
-    data object OpenPreDownloadNumPicker : ReadBookIntent
-    data object OpenPreSynthesisConcurrencyPicker : ReadBookIntent
-    data object OpenParagraphIntervalPicker : ReadBookIntent
-    data object OpenCacheCleanTimePicker : ReadBookIntent
+    data class SelectReadAloudConfigTab(val tab: ReadAloudConfigTab) : ReadBookIntent
     data class ApplyPreDownloadNum(val value: Int) : ReadBookIntent
     data class ApplyPreSynthesisConcurrency(val value: Int) : ReadBookIntent
     data class ApplyAudioCacheCleanTime(val value: Int) : ReadBookIntent
@@ -988,10 +992,6 @@ sealed interface ReadBookSheet {
     data object BgTextConfig : ReadBookSheet
     data object ReadAloudConfig : ReadBookSheet
     data object ReadAloudPlayer : ReadBookSheet
-    data object PreDownloadConfig : ReadBookSheet
-    data object PreSynthesisConcurrencyConfig : ReadBookSheet
-    data object AudioCacheCleanConfig : ReadBookSheet
-    data object ParagraphIntervalConfig : ReadBookSheet
     data object ClickActionConfig : ReadBookSheet
     data object PageKeyConfig : ReadBookSheet
     data object InfoConfig : ReadBookSheet

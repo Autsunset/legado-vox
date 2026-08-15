@@ -1,11 +1,14 @@
 package io.legado.app.ui.book.read
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.View
@@ -35,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -52,6 +56,7 @@ import io.legado.app.help.IntentHelp
 import io.legado.app.model.ReadBook
 import io.legado.app.model.SourceCallBack
 import io.legado.app.model.translation.TranslationChapterStatus
+import io.legado.app.service.BaseReadAloudService
 import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.book.read.page.ContentTextView
 import io.legado.app.ui.book.read.page.ReadView
@@ -308,6 +313,13 @@ fun ReadBookRouteScreen(
         viewModel.onIntent(ReadBookIntent.BookInfoResult(result.resultCode == android.app.Activity.RESULT_OK))
     }
 
+    val readAloudNotificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        // Permission controls notification visibility, not whether media playback may start.
+        controller.handleEffect(ReadBookEffect.ToggleReadAloud)
+    }
+
     AutoSuggestDayNightObserver(
         viewModel = viewModel,
         autoSuggestDayNight = readPreferences.autoSuggestDayNight,
@@ -460,6 +472,23 @@ fun ReadBookRouteScreen(
 
                             is ReadBookEffect.OpenHighlightRuleExportPicker -> {
                                 exportHighlightRulePicker.launch("highlightRule.json")
+                            }
+
+                            ReadBookEffect.ToggleReadAloud -> {
+                                val needsNotificationPermission =
+                                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                        !BaseReadAloudService.isRun &&
+                                        ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.POST_NOTIFICATIONS,
+                                        ) != PackageManager.PERMISSION_GRANTED
+                                if (needsNotificationPermission) {
+                                    readAloudNotificationPermissionLauncher.launch(
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    )
+                                } else {
+                                    controller.handleEffect(effect)
+                                }
                             }
 
                             // All other effects — delegate to bridge (View/Window/Activity operations)

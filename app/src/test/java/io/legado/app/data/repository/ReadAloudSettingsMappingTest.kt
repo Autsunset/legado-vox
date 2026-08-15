@@ -22,6 +22,21 @@ class ReadAloudSettingsMappingTest {
     }
 
     @Test
+    fun `段落间隔缺省为 100ms 且保留显式零值`() {
+        assertEquals(
+            100,
+            emptyMap<String, Any?>().toTestPreferences().toReadAloudSettings().ttsParagraphInterval,
+        )
+        assertEquals(
+            0,
+            mapOf(PreferKey.ttsParagraphInterval to 0)
+                .toTestPreferences()
+                .toReadAloudSettings()
+                .ttsParagraphInterval,
+        )
+    }
+
+    @Test
     fun `胶囊坐标与 nullable 引擎通过真实原子路径单批写入`() {
         val values = captureAtomicUpdateValues(
             current = ReadAloudSettings(ttsEngine = "engine-old"),

@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Animation
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BugReport
@@ -378,6 +379,12 @@ private fun moreActionSpecs(
     MoreActionSpec(
         "add_bookmark", stringResource(R.string.bookmark_add), Icons.Default.Bookmark,
         onClick = { dispatch(ReadBookIntent.AddBookmark) }),
+    MoreActionSpec(
+        "ai_summary", stringResource(R.string.ai_chapter_summary), Icons.Default.AutoAwesome,
+        onClick = { dispatch(ReadBookIntent.OpenChapterSummary) }),
+    MoreActionSpec(
+        "ai_rewrite", stringResource(R.string.ai_text_rewrite), Icons.Default.Edit,
+        onClick = { dispatch(ReadBookIntent.OpenAiCurrentChapterRewrite) }),
     MoreActionSpec(
         "text_processing", stringResource(R.string.text_processing), Icons.Default.FindReplace,
         onClick = { onIntent(ReadBookIntent.ShowSheet(ReadBookSheet.TextProcessing)) }),

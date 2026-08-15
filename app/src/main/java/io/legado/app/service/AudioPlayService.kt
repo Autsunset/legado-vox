@@ -211,6 +211,11 @@ class AudioPlayService : BaseService(),
         }
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        // Keep audio playback alive when the user removes the UI task from Recents.
+    }
+
     /**
      * 播放音频
      */

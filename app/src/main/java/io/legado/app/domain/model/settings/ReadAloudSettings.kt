@@ -2,7 +2,7 @@ package io.legado.app.domain.model.settings
 
 data class ReadAloudSettings(
     val ttsEngine: String? = null,
-    val ttsParagraphInterval: Int = 0,
+    val ttsParagraphInterval: Int = 100,
     val audioCacheCleanTime: Int = 10,
     val ignoreAudioFocus: Boolean = false,
     val mediaButtonOnExit: Boolean = true,

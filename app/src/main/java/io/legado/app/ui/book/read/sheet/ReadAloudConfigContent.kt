@@ -1,6 +1,7 @@
 package io.legado.app.ui.book.read.sheet
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -8,26 +9,25 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.legado.app.R
 import io.legado.app.constant.ReadAloudBgMode
+import io.legado.app.ui.book.read.ReadAloudConfigTab
 import io.legado.app.ui.book.read.ReadBookIntent
 import io.legado.app.ui.book.read.ReadBookUiState
 import io.legado.app.ui.book.readaloud.player.ReadAloudPlayerIntent
 import io.legado.app.ui.book.readaloud.player.ReadAloudPlayerUiState
-import io.legado.app.ui.widget.components.modalBottomSheet.AppModalBottomSheet
 import io.legado.app.ui.widget.components.settingItem.SliderSettingItem
 import io.legado.app.ui.widget.components.settingItem.TinyClickableSettingItem
 import io.legado.app.ui.widget.components.settingItem.TinyDropdownSettingItem
 import io.legado.app.ui.widget.components.settingItem.TinySwitchSettingItem
 import io.legado.app.ui.widget.components.tabRow.CardTabRow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun ReadAloudConfigContent(
@@ -37,20 +37,36 @@ fun ReadAloudConfigContent(
     onPlayerIntent: (ReadAloudPlayerIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState(pageCount = { 2 })
-    val scope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    val pagerState = rememberPagerState(
+        initialPage = state.readAloudConfigTab.ordinal,
+        pageCount = { ReadAloudConfigTab.entries.size },
+    )
+    LaunchedEffect(state.readAloudConfigTab) {
+        if (pagerState.currentPage != state.readAloudConfigTab.ordinal) {
+            pagerState.animateScrollToPage(state.readAloudConfigTab.ordinal)
+        }
+    }
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .collect { page ->
+                ReadAloudConfigTab.entries.getOrNull(page)?.let { tab ->
+                    onIntent(ReadBookIntent.SelectReadAloudConfigTab(tab))
+                }
+            }
+    }
+    Column(modifier = modifier.fillMaxWidth()) {
         CardTabRow(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
             tabTitles = listOf(
                 stringResource(R.string.read_aloud_settings_general_tab),
                 stringResource(R.string.read_aloud_settings_voice_tab),
             ),
             selectedTabIndex = pagerState.currentPage,
             onTabSelected = { page ->
-                scope.launch { pagerState.animateScrollToPage(page) }
+                ReadAloudConfigTab.entries.getOrNull(page)?.let { tab ->
+                    onIntent(ReadBookIntent.SelectReadAloudConfigTab(tab))
+                }
             }
         )
         HorizontalPager(
@@ -58,11 +74,11 @@ fun ReadAloudConfigContent(
             verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = false),
+                .weight(1f),
         ) { page ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(top = 8.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
             ) {
@@ -219,21 +235,57 @@ fun ReadAloudConfigContent(
                         title = stringResource(R.string.sys_tts_config),
                         onClick = { onIntent(ReadBookIntent.OpenSystemTtsSettings) },
                     )
-                    TinyClickableSettingItem(
+                    SliderSettingItem(
                         title = stringResource(R.string.read_aloud_preload),
-                        onClick = { onIntent(ReadBookIntent.OpenPreDownloadNumPicker) },
+                        description = stringResource(
+                            R.string.read_aloud_preload_summary,
+                            state.preDownloadNum,
+                        ),
+                        value = state.preDownloadNum.toFloat(),
+                        defaultValue = 10f,
+                        valueRange = 0f..100f,
+                        onValueChange = {
+                            onIntent(ReadBookIntent.ApplyPreDownloadNum(it.toInt()))
+                        },
                     )
-                    TinyClickableSettingItem(
+                    SliderSettingItem(
                         title = stringResource(R.string.tts_pre_synthesis_concurrency),
-                        onClick = { onIntent(ReadBookIntent.OpenPreSynthesisConcurrencyPicker) },
+                        description = stringResource(
+                            R.string.tts_pre_synthesis_concurrency_summary,
+                            state.preSynthesisConcurrency,
+                        ),
+                        value = state.preSynthesisConcurrency.toFloat(),
+                        defaultValue = 3f,
+                        valueRange = 1f..8f,
+                        onValueChange = {
+                            onIntent(ReadBookIntent.ApplyPreSynthesisConcurrency(it.toInt()))
+                        },
                     )
-                    TinyClickableSettingItem(
+                    SliderSettingItem(
                         title = stringResource(R.string.tts_paragraph_interval),
-                        onClick = { onIntent(ReadBookIntent.OpenParagraphIntervalPicker) },
+                        description = stringResource(
+                            R.string.tts_paragraph_interval_summary,
+                            state.readAloudParagraphInterval,
+                        ),
+                        value = state.readAloudParagraphInterval.toFloat(),
+                        defaultValue = 100f,
+                        valueRange = 0f..5000f,
+                        onValueChange = {
+                            onIntent(ReadBookIntent.ApplyParagraphInterval(it.toInt()))
+                        },
                     )
-                    TinyClickableSettingItem(
+                    SliderSettingItem(
                         title = stringResource(R.string.audio_cache_clean_time),
-                        onClick = { onIntent(ReadBookIntent.OpenCacheCleanTimePicker) },
+                        description = stringResource(
+                            R.string.audio_cache_clean_time_summary,
+                            state.audioCacheCleanTime,
+                        ),
+                        value = state.audioCacheCleanTime.toFloat(),
+                        defaultValue = 10f,
+                        valueRange = 0f..10080f,
+                        onValueChange = {
+                            onIntent(ReadBookIntent.ApplyAudioCacheCleanTime(it.toInt()))
+                        },
                     )
                     TinyClickableSettingItem(
                         title = stringResource(R.string.clear_cache),
@@ -241,39 +293,6 @@ fun ReadAloudConfigContent(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ReadAloudNumberConfigSheet(
-    show: Boolean,
-    title: String,
-    description: String,
-    value: Int,
-    defaultValue: Int,
-    valueRange: ClosedFloatingPointRange<Float>,
-    onValueChange: (Int) -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    AppModalBottomSheet(
-        show = show,
-        onDismissRequest = onDismissRequest,
-        title = title,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            SliderSettingItem(
-                title = title,
-                description = description,
-                value = value.toFloat(),
-                defaultValue = defaultValue.toFloat(),
-                valueRange = valueRange,
-                onValueChange = { onValueChange(it.toInt()) },
-            )
         }
     }
 }

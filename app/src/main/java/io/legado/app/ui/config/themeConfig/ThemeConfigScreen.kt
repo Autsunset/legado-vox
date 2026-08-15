@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -32,16 +33,11 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -53,10 +49,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.legado.app.R
@@ -976,7 +968,6 @@ private fun BaseCardBorderColorSettingItem(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ThemeModeSelector(
     selectedMode: String,
@@ -988,30 +979,20 @@ fun ThemeModeSelector(
         Triple("2", stringResource(R.string.dark_mode), Icons.Filled.DarkMode)
     )
 
-    val selectedIndex = modes.indexOfFirst { it.first == selectedMode }
-        .coerceAtLeast(0)
-
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        val modifiers = listOf(Modifier.weight(1.2f), Modifier.weight(1f), Modifier.weight(1f))
-
         modes.forEachIndexed { index, (value, label, icon) ->
-            ToggleButton(
-                checked = selectedIndex == index,
-                onCheckedChange = { onModeSelected(value) },
-                modifier = modifiers[index].semantics { role = Role.RadioButton },
-                shapes = when (index) {
-                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    modes.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                }
-            ) {
-                Icon(imageVector = icon, contentDescription = null)
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = label, overflow = TextOverflow.Ellipsis, maxLines = 1)
-            }
+            MediumTonalButton(
+                onClick = {
+                    if (selectedMode != value) onModeSelected(value)
+                },
+                selected = selectedMode == value,
+                icon = icon,
+                text = label,
+                modifier = Modifier.weight(if (index == 0) 1.2f else 1f),
+            )
         }
     }
 }
@@ -1032,7 +1013,10 @@ fun ThemeColorSelector(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(themes) { (label, value) ->
+        items(
+            items = themes,
+            key = { (_, value) -> value },
+        ) { (label, value) ->
             ThemeColorButton(
                 context = context,
                 label = label,
@@ -1079,6 +1063,7 @@ fun ThemeColorButton(
     }
     val borderWidth by animateDpAsState(
         targetValue = if (isSelected) 2.dp else 0.dp,
+        animationSpec = tween(durationMillis = 150),
         label = "borderWidth"
     )
 
@@ -1089,10 +1074,11 @@ fun ThemeColorButton(
             onClick = onClick,
             modifier = Modifier.size(64.dp),
             shape = RoundedCornerShape(16.dp),
-            border = if (isSelected) BorderStroke(
-                borderWidth,
-                LegadoTheme.colorScheme.primary
-            ) else null,
+            border = if (borderWidth > 0.dp) {
+                BorderStroke(borderWidth, LegadoTheme.colorScheme.primary)
+            } else {
+                null
+            },
             colors = CardDefaults.cardColors(containerColor = colors.surfaceContainer)
         ) {
             Box(

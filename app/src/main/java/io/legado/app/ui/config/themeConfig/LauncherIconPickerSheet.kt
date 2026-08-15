@@ -34,10 +34,7 @@ import io.legado.app.ui.main.Launcher0
 import io.legado.app.ui.main.Launcher1
 import io.legado.app.ui.main.Launcher2
 import io.legado.app.ui.main.Launcher3
-import io.legado.app.ui.main.Launcher4
-import io.legado.app.ui.main.Launcher5
-import io.legado.app.ui.main.Launcher6
-import io.legado.app.ui.main.LauncherW
+import io.legado.app.ui.main.MainActivity
 import io.legado.app.ui.theme.LegadoTheme
 import io.legado.app.ui.widget.components.modalBottomSheet.AppModalBottomSheet
 import io.legado.app.ui.widget.components.text.AppText
@@ -139,57 +136,33 @@ object LauncherIcons {
     val list = listOf(
         LauncherIconItem(
             value = "ic_launcher",
-            label = "iconMain",
+            label = "D",
             resId = R.mipmap.ic_launcher,
-            component = ComponentName(appCtx, LauncherW::class.java)
-        ),
-        LauncherIconItem(
-            value = "launcherw",
-            label = "iconWhite",
-            resId = R.mipmap.launcherw,
-            component = ComponentName(appCtx, LauncherW::class.java)
+            component = ComponentName(appCtx, MainActivity::class.java)
         ),
         LauncherIconItem(
             value = "launcher0",
-            label = "icon0",
+            label = "原图",
             resId = R.mipmap.launcher0,
             component = ComponentName(appCtx, Launcher0::class.java)
         ),
         LauncherIconItem(
             value = "launcher1",
-            label = "icon1",
+            label = "A",
             resId = R.mipmap.launcher1,
             component = ComponentName(appCtx, Launcher1::class.java)
         ),
         LauncherIconItem(
             value = "launcher2",
-            label = "icon2",
+            label = "B",
             resId = R.mipmap.launcher2,
             component = ComponentName(appCtx, Launcher2::class.java)
         ),
         LauncherIconItem(
             value = "launcher3",
-            label = "icon3",
+            label = "C",
             resId = R.mipmap.launcher3,
             component = ComponentName(appCtx, Launcher3::class.java)
-        ),
-        LauncherIconItem(
-            value = "launcher4",
-            label = "icon4",
-            resId = R.mipmap.launcher4,
-            component = ComponentName(appCtx, Launcher4::class.java)
-        ),
-        LauncherIconItem(
-            value = "launcher5",
-            label = "icon5",
-            resId = R.mipmap.launcher5,
-            component = ComponentName(appCtx, Launcher5::class.java)
-        ),
-        LauncherIconItem(
-            value = "launcher6",
-            label = "icon6",
-            resId = R.mipmap.launcher6,
-            component = ComponentName(appCtx, Launcher6::class.java)
         ),
     )
 

@@ -1,9 +1,9 @@
 [
   {
-    "bgStr": "#ffc0edc6",
+    "bgStr": "羊皮纸1.jpg",
     "bgStrEInk": "#FFFFFF",
     "bgStrNight": "#000000",
-    "bgType": 0,
+    "bgType": 1,
     "bgTypeEInk": 0,
     "bgTypeNight": 0,
     "darkStatusIcon": true,
@@ -21,7 +21,7 @@
     "headerPaddingTop": 10,
     "letterSpacing": 0,
     "lineSpacingExtra": 10,
-    "name": "微信读书",
+    "name": "羊皮纸1",
     "paddingBottom": 4,
     "paddingLeft": 22,
     "paddingRight": 22,

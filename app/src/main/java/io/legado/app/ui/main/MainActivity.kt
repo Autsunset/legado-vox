@@ -60,10 +60,11 @@ import io.legado.app.utils.LogUtils
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.startActivity
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -249,7 +250,7 @@ open class MainActivity : BaseComposeActivity() {
     private val otherSettingsGateway by inject<OtherSettingsGateway>()
     private val mangaSettingsGateway by inject<MangaSettingsGateway>()
     private val backupSettingsGateway by inject<BackupSettingsGateway>()
-    private val routeEvents = MutableSharedFlow<NavKey>(extraBufferCapacity = 1)
+    private val routeEvents = Channel<NavKey>(capacity = Channel.BUFFERED)
     private var shouldApplyDefaultToRead = true
     private var restoredReadBookRoute: MainRouteReadBook? = null
     private var latestBackStack: List<NavKey> = emptyList()
@@ -295,7 +296,7 @@ open class MainActivity : BaseComposeActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         if (!intent.hasExplicitStartRoute()) return
-        routeEvents.tryEmit(MainNavigator.resolveStartRoute(intent))
+        routeEvents.trySend(MainNavigator.resolveStartRoute(intent))
     }
 
     @OptIn(ExperimentalSharedTransitionApi::class)
@@ -353,7 +354,7 @@ open class MainActivity : BaseComposeActivity() {
         }
 
         LaunchedEffect(backStack) {
-            routeEvents.collect { route ->
+            routeEvents.receiveAsFlow().collect { route ->
                 MainNavigator.navigateToRoute(backStack, route)
             }
         }

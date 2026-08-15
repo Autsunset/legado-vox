@@ -4,7 +4,7 @@
     <string name="app_name">Legado Vox</string>
     <string name="app_name_a">Legado Vox·A</string>
     <string name="receiving_shared_label">Legado Vox·search</string>
-    <string name="tip_perm_request_storage">Legado needs storage access to find and read books. Please go "App Settings" to allow "Storage Permission".</string>
+    <string name="tip_perm_request_storage">Legado Vox needs storage access to find and read books. Please go "App Settings" to allow "Storage Permission".</string>
 
     <!--Other-->
     <string name="menu_backup">Home</string>
@@ -164,12 +164,8 @@
     <string name="offline_cache_t">Offline cache</string>
     <string name="offline_cache_s">Cache the selected chapter(s) to Storage</string>
     <string name="change_origin">Change Origin</string>
-    <string name="about_description">
-        \u3000\u3000 This is an open source reading software newly developed by Kotlin, welcome to join us.
-    </string>
-    <string name="app_share_description">
-        Legado (YueDu 3.0) download link：\n https://github.com/gedoor/legado/releases
-    </string>
+    <string name="about_description">Reading and audiobook playback, independently maintained as Legado Vox.</string>
+    <string name="app_share_description">Legado Vox releases:\nhttps://github.com/Autsunset/legado-vox/releases</string>
     <string name="version_name">Version %s</string>
     <string name="pt_background_verification">Background-verification</string>
     <string name="ps_background_verification">You can operate freely when verifying the book source</string>
@@ -318,7 +314,10 @@
     <string name="cache_book_threads_num_title">Cache Download Threads</string>
     <string name="cache_book_threads_num_summary">Controls concurrent chapter downloads for offline book cache. Higher values increase OOM risk</string>
     <string name="change_icon">Change Icon</string>
-    <string name="remove_from_bookshelf">In library</string>
+    <string name="remove_from_bookshelf">Remove from bookshelf</string>
+    <string name="remove_selected_books_message">Remove the selected %1$d books from the bookshelf?</string>
+    <string name="delete_online_book_cache">Also delete offline cache for online books</string>
+    <string name="removed_books_from_bookshelf">Removed %1$d books from the bookshelf</string>
     <string name="already_in_bookshelf">Already in Bookshelf</string>
     <string name="start_read">Start reading</string>
     <string name="data_loading">Loading…</string>
@@ -911,7 +910,7 @@
     <string name="btn_default_s">Default</string>
     <string name="main_menu">Main menu</string>
     <string name="request_permission">Tap to grant permission</string>
-    <string name="tip_local_perm_request_storage">Legado needs Storage Permission, please tap the "Grant Permission" button below, or go to "Settings"-"Application Permissions"-to open the required permission. If the permission is still not work, please tap "Select Folder" in the upper right corner to use the system folder picker.</string>
+    <string name="tip_local_perm_request_storage">Legado Vox needs Storage Permission, please tap the "Grant Permission" button below, or go to "Settings"-"Application Permissions"-to open the required permission. If the permission is still not work, please tap "Select Folder" in the upper right corner to use the system folder picker.</string>
     <string name="alouding_disable">The selected text cannot be spoken in full text speech</string>
     <string name="read_body_to_lh">Extend to Cutout</string>
     <string name="toc_updateing">Updating Chapters</string>
@@ -921,11 +920,11 @@
     <string name="contact">Contact</string>
     <string name="license">License</string>
     <string name="other">More Settings</string>
-    <string name="official_account">Open Source Reading</string>
-    <string name="follow_official_account">Follow WeChat Official Accounts</string>
+    <string name="official_account">Legado Vox</string>
+    <string name="follow_official_account">Visit the Legado Vox project</string>
     <string name="wechat">WeChat</string>
     <string name="thanks">Supporting me will be appreciated</string>
-    <string name="about_official_account">Official Account [Open Source Reading]</string>
+    <string name="about_official_account">Legado Vox</string>
     <string name="source_auto_changing">Changing source</string>
     <string name="click_to_apply">Tap to join</string>
     <string name="middle">Middle</string>
@@ -970,7 +969,7 @@
     <string name="starting_download">Starting download</string>
     <string name="already_in_download">This book is already in Download list</string>
     <string name="click_to_open">Click to open</string>
-    <string name="follow_public_account_summary">Follow [Open Source Reading] to support me by clicking on ads</string>
+    <string name="follow_public_account_summary">View Legado Vox releases and project information</string>
     <string name="weChat_appreciation_code">WeChat Tipping Code</string>
     <string name="alipay">AliPay</string>
     <string name="alipay_red_envelope_search_code">AliPay red envelope search code</string>
@@ -1026,7 +1025,7 @@
     <string name="language">Language</string>
     <string name="import_rss_source">Import rss source</string>
     <string name="donate_summary">Your donation makes this app better</string>
-    <string name="about_summary">WeChat official account [Open Source Reading]</string>
+    <string name="about_summary">Legado Vox</string>
     <string name="read_record">Read Record</string>
     <string name="del_read_record">Delete Read record</string>
     <string name="read_record_summary">Read record summary</string>
@@ -1403,7 +1402,7 @@
     <string name="tip_divider_color_shared_desc">Shared by header and footer</string>
     <string name="same_title_removed">Remove Duplicate Title</string>
     <string name="update_book_fail">Update failed</string>
-    <string name="notification_permission_rationale">Reading requires sending notifications to show reading control and download progress</string>
+    <string name="notification_permission_rationale">Legado Vox uses notifications for audiobook controls and download progress.</string>
     <string name="permission_not_required">Permission not required</string>
     <string name="webdav_after_local_restore_confirm">The WebDAV book source is newer than the local one. Do you want to restore it?</string>
     <string name="c_whitelist">Whitelist (contentWhitelist)</string>
@@ -1536,7 +1535,7 @@
     <string name="font_weight_custom_description">Custom weight only applies to variable fonts</string>
     <string name="keep_swipe_tip">Keep swiping to load the next chapter…</string>
     <string name="enable_optimize_render">Enable Render Optimization</string>
-    <string name="ignore_battery_permission_rationale">Reading requires requesting background permission to keep the service running properly</string>
+    <string name="ignore_battery_permission_rationale">Legado Vox needs background access to keep audiobook playback, downloads, and the web service running.</string>
     <string name="simulated_reading">Simulated Reading</string>
     <string name="switch_on">Switch</string>
     <string name="start_from">Start From</string>
@@ -2398,7 +2397,7 @@
     <string name="sort_old_first">Old First</string>
     <string name="sort_new_first">New First</string>
     <string name="drag_disabled_in_sort_mode">Drag disabled in this sort mode</string>
-    <string name="selection_mode">Selection Mode</string>
+    <string name="selection_mode">Select multiple</string>
     <string name="folder_layout_mode">Folder Layout Mode</string>
     <string name="list_cover_width">List Cover Width</string>
     <string name="folder_list_style">Folder List Style</string>
@@ -2782,8 +2781,8 @@
     <string name="read_aloud_default_engine_summary">Used when no character voice is assigned · %1$s</string>
     <string name="read_aloud_default_engine_scope_summary">Used when no character voice is assigned; System TTS or HTTP TTS</string>
     <string name="read_aloud_current_default_summary">Current default · Used when multi-speaker reading is disabled</string>
-    <string name="read_aloud_engines_and_voices">Reading engines and voices</string>
-    <string name="read_aloud_engines_and_voices_summary">Manage System, HTTP and cloud TTS voices</string>
+    <string name="read_aloud_engines_and_voices">Default engine and voice</string>
+    <string name="read_aloud_engines_and_voices_summary">Choose the engine and voice used for single-speaker reading, and manage multi-speaker voices</string>
     <string name="read_aloud_character_casting">Characters and voice assignments</string>
     <string name="read_aloud_character_casting_summary">Assign voices to characters, narration and unknown dialogue</string>
     <string name="read_aloud_other_settings">Other reading settings</string>
@@ -2840,7 +2839,11 @@
     <string name="cloud_tts_choose_engine">Choose an engine and add a voice</string>
     <string name="cloud_tts_select_voice">Select voice</string>
     <string name="cloud_tts_saved_voices">Saved voices</string>
-    <string name="cloud_tts_no_saved_voices">No saved voices. Choose an engine above first.</string>
+    <string name="cloud_tts_no_saved_voices">No saved voices</string>
+    <string name="cloud_tts_open_engine_settings">Open Engines to add and test a cloud TTS engine, then save a voice.</string>
+    <string name="cloud_tts_voice_default_guide">Tap a cloud TTS voice to make it the default. Single-speaker reading uses this voice for the whole chapter.</string>
+    <string name="cloud_tts_engine_default_guide">Tap an engine to make it the default. A cloud TTS engine needs at least one saved voice.</string>
+    <string name="cloud_tts_set_default_voice_hint">Tap to use as the default voice</string>
     <string name="cloud_tts_engines">Cloud TTS engines</string>
     <string name="cloud_tts_no_engines">No cloud TTS engine configured</string>
     <string name="cloud_tts_available_engines">Available reading engines</string>
@@ -3123,13 +3126,13 @@
     <string name="manga_reader_no_source">No suitable source</string>
     <string name="manga_reader_auto_source_failed">Automatic source change failed</string>
 
-    <string name="cloud_tts_current_default_voice">Current default voice</string>
+    <string name="cloud_tts_current_default_voice">Current default voice · Used for single-speaker reading</string>
     <string name="mimo_tts_endpoint_metered">Metered billing</string>
     <string name="mimo_tts_endpoint_token_cn">Token Plan (China)</string>
     <string name="mimo_tts_endpoint_token_sgp">Token Plan (Singapore)</string>
     <string name="mimo_tts_endpoint_token_eu">Token Plan (Europe)</string>
     <string name="mimo_tts_endpoint_value">API endpoint: %1$s</string>
-    <string name="mimo_tts_in_app_note">AI speech is generated and played inside Legado. This does not install or change the Android system TTS engine. Reading text is sent to the MiMo API endpoint you select; make sure you are authorized to process it and accept the provider’s terms and privacy policy.</string>
+    <string name="mimo_tts_in_app_note">AI speech is generated and played inside Legado Vox. This does not install or change the Android system TTS engine. Reading text is sent to the MiMo API endpoint you select; make sure you are authorized to process it and accept the provider’s terms and privacy policy.</string>
     <string name="mimo_tts_synthesis_settings">MiMo audiobook synthesis</string>
     <string name="mimo_tts_temperature">Sampling temperature</string>
     <string name="mimo_tts_temperature_summary">Lower values are more consistent across audiobook segments; higher values are more varied.</string>

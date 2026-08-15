@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="?attr/colorSurface"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -17,12 +18,12 @@
 
         <ImageView
             android:layout_width="56dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="48dp"
             android:importantForAccessibility="no"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:scaleType="centerInside"
+            android:src="@drawable/welcome_logo" />
 
         <TextView
             android:id="@+id/tv_title"

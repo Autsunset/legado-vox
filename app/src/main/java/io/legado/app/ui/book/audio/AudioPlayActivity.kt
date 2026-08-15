@@ -1,8 +1,10 @@
 package io.legado.app.ui.book.audio
 
+import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.RenderEffect
@@ -17,7 +19,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.scale
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.isVisible
@@ -124,10 +128,15 @@ class AudioPlayActivity :
         }
     }
     private val sourceEditResult =
-        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
                 viewModel.upSource()
             }
+        }
+    private val notificationPermissionResult =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            // Permission controls notification visibility, not whether media playback may start.
+            AudioPlay.loadOrUpPlayUrl()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -468,7 +477,19 @@ class AudioPlayActivity :
         when (AudioPlay.status) {
             Status.PLAY -> AudioPlay.pause(this)
             Status.PAUSE -> AudioPlay.resume(this)
-            else -> AudioPlay.loadOrUpPlayUrl()
+            else -> {
+                val needsNotificationPermission =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.POST_NOTIFICATIONS,
+                        ) != PackageManager.PERMISSION_GRANTED
+                if (needsNotificationPermission) {
+                    notificationPermissionResult.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    AudioPlay.loadOrUpPlayUrl()
+                }
+            }
         }
     }
 

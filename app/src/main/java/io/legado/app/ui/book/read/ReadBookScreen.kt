@@ -35,7 +35,6 @@ import io.legado.app.ui.book.read.sheet.MoreConfigSheet
 import io.legado.app.ui.book.read.sheet.PageAnimConfigSheet
 import io.legado.app.ui.book.read.sheet.PageKeyConfigSheet
 import io.legado.app.ui.book.read.sheet.PhotoSheet
-import io.legado.app.ui.book.read.sheet.ReadAloudNumberConfigSheet
 import io.legado.app.ui.book.read.sheet.ReadAloudPage
 import io.legado.app.ui.book.read.sheet.ReadAloudScreen
 import io.legado.app.ui.book.read.sheet.ReaderMoreActionsSheet
@@ -345,62 +344,6 @@ fun ReadBookScreen(
         onOpenTextSelectMenuConfig = onOpenTextSelectMenuConfig,
         onPickBookmarkBadgeImage = onPickBookmarkBadgeImage,
         onResetBookmarkBadge = onResetBookmarkBadge,
-    )
-    ReadAloudNumberConfigSheet(
-        show = state.activeSheet is ReadBookSheet.PreDownloadConfig,
-        title = stringResource(R.string.read_aloud_preload),
-        description = stringResource(R.string.read_aloud_preload_summary, state.preDownloadNum),
-        value = state.preDownloadNum,
-        defaultValue = 10,
-        valueRange = 0f..100f,
-        onValueChange = { onIntent(ReadBookIntent.ApplyPreDownloadNum(it)) },
-        onDismissRequest = {
-            onIntent(ReadBookIntent.ShowSheet(ReadBookSheet.ReadAloudConfig))
-        },
-    )
-    ReadAloudNumberConfigSheet(
-        show = state.activeSheet is ReadBookSheet.PreSynthesisConcurrencyConfig,
-        title = stringResource(R.string.tts_pre_synthesis_concurrency),
-        description = stringResource(
-            R.string.tts_pre_synthesis_concurrency_summary, state.preSynthesisConcurrency,
-        ),
-        value = state.preSynthesisConcurrency,
-        defaultValue = 3,
-        valueRange = 1f..8f,
-        onValueChange = { onIntent(ReadBookIntent.ApplyPreSynthesisConcurrency(it)) },
-        onDismissRequest = {
-            onIntent(ReadBookIntent.ShowSheet(ReadBookSheet.ReadAloudConfig))
-        },
-    )
-    ReadAloudNumberConfigSheet(
-        show = state.activeSheet is ReadBookSheet.AudioCacheCleanConfig,
-        title = stringResource(R.string.audio_cache_clean_time),
-        description = stringResource(
-            R.string.audio_cache_clean_time_summary,
-            state.audioCacheCleanTime
-        ),
-        value = state.audioCacheCleanTime,
-        defaultValue = 10,
-        valueRange = 0f..10080f,
-        onValueChange = { onIntent(ReadBookIntent.ApplyAudioCacheCleanTime(it)) },
-        onDismissRequest = {
-            onIntent(ReadBookIntent.ShowSheet(ReadBookSheet.ReadAloudConfig))
-        },
-    )
-    ReadAloudNumberConfigSheet(
-        show = state.activeSheet is ReadBookSheet.ParagraphIntervalConfig,
-        title = stringResource(R.string.tts_paragraph_interval),
-        description = stringResource(
-            R.string.tts_paragraph_interval_summary,
-            state.readAloudParagraphInterval
-        ),
-        value = state.readAloudParagraphInterval,
-        defaultValue = 0,
-        valueRange = 0f..5000f,
-        onValueChange = { onIntent(ReadBookIntent.ApplyParagraphInterval(it)) },
-        onDismissRequest = {
-            onIntent(ReadBookIntent.ShowSheet(ReadBookSheet.ReadAloudConfig))
-        },
     )
     AppLogSheet(
         show = state.activeSheet is ReadBookSheet.AppLog,

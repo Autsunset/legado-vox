@@ -808,6 +808,10 @@ private fun BookInfoOverflowMenu(
                 text = stringResource(R.string.edit),
                 onClick = { onMenuAction(BookInfoMenuAction.Edit) }
             )
+            RoundDropdownMenuItem(
+                text = stringResource(R.string.remove_from_bookshelf),
+                onClick = { onMenuAction(BookInfoMenuAction.RemoveFromBookshelf) }
+            )
         }
         RoundDropdownMenuItem(
             text = stringResource(R.string.refresh),

@@ -101,13 +101,9 @@ abstract class BaseService : LifecycleService() {
     }
 
     /**
-     * 检测通知权限和后台权限
+     * 检测后台运行权限。通知权限由具体播放/任务入口按场景请求。
      */
     private fun checkPermission() {
-        PermissionsCompat.Builder()
-            .addPermissions(Permissions.POST_NOTIFICATIONS)
-            .rationale(R.string.notification_permission_rationale)
-            .request()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PermissionsCompat.Builder()
                 .addPermissions(Permissions.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)

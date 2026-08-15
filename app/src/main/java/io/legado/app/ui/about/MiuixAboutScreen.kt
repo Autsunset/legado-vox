@@ -275,7 +275,7 @@ private fun AboutContent(
                     .background(Color.White),
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    painter = painterResource(R.drawable.ic_launcher_artwork),
                     contentDescription = null,
                     modifier = Modifier.scale(1.1f)
                 )

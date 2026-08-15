@@ -76,8 +76,11 @@ fun BgTextConfigSheet(
     val nightBgColor = if (styleConfig.bgTypeNight == 0) {
         runCatching { styleConfig.bgStrNight.toColorInt() }.getOrDefault(0xFF000000.toInt())
     } else 0
-    val dayBgImage = if (styleConfig.bgType != 0) styleConfig.bgStr else null
-    val nightBgImage = if (styleConfig.bgTypeNight != 0) styleConfig.bgStrNight else null
+    val dayBgImage = ReadBackgroundPreset.previewModel(styleConfig.bgType, styleConfig.bgStr)
+    val nightBgImage = ReadBackgroundPreset.previewModel(
+        styleConfig.bgTypeNight,
+        styleConfig.bgStrNight,
+    )
 
     var showColorPicker by remember { mutableStateOf(false) }
     var colorPickerIsNight by remember { mutableStateOf(false) }
@@ -184,8 +187,6 @@ fun BgTextConfigSheet(
                     onIntent(ReadBookIntent.UpdateConfig(ConfigUpdate.BgAlpha(it.toInt())))
                 },
             )
-
-            // TODO: Add background image grid from assets
         }
     }
 
