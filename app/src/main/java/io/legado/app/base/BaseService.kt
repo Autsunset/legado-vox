@@ -28,6 +28,7 @@ abstract class BaseService : LifecycleService() {
     private val simpleName = this::class.simpleName.toString()
     @Volatile
     private var isForeground = false
+    protected open val stopOnTaskRemoved = true
 
     fun <T> execute(
         scope: CoroutineScope = lifecycleScope,
@@ -72,7 +73,9 @@ abstract class BaseService : LifecycleService() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         LogUtils.d(simpleName, "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        stopSelf()
+        if (stopOnTaskRemoved) {
+            stopSelf()
+        }
     }
 
     override fun onBind(intent: Intent): IBinder? {

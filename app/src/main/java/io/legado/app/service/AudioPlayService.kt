@@ -64,6 +64,8 @@ class AudioPlayService : BaseService(),
     AudioManager.OnAudioFocusChangeListener,
     Player.Listener {
 
+    override val stopOnTaskRemoved = false
+
     companion object {
         @JvmStatic
         var isRun = false
@@ -209,11 +211,6 @@ class AudioPlayService : BaseService(),
         upNotificationJob?.invokeOnCompletion {
             notificationManager.cancel(NotificationId.AudioPlayService)
         }
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        // Keep audio playback alive when the user removes the UI task from Recents.
     }
 
     /**

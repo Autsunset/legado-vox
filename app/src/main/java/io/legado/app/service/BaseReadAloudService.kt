@@ -87,6 +87,8 @@ import splitties.systemservices.wifiManager
 abstract class BaseReadAloudService : BaseService(),
     AudioManager.OnAudioFocusChangeListener {
 
+    override val stopOnTaskRemoved = false
+
     companion object {
         @JvmStatic
         var isRun = false
@@ -256,11 +258,6 @@ abstract class BaseReadAloudService : BaseService(),
         upNotificationJob?.invokeOnCompletion {
             notificationManager.cancel(NotificationId.ReadAloudService)
         }
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        // Keep audiobook playback alive when the user removes the UI task from Recents.
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
