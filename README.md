@@ -81,6 +81,22 @@ Legado Vox 保留 Legado 成熟的书源规则、书架、阅读器、订阅和 
 
 书源通常可以通过 URL、二维码、剪贴板或 JSON 文件导入。第三方书源可执行 JavaScript 规则，并可能访问对应站点；导入前请检查来源。
 
+## 使用边界与法律说明
+
+> [!WARNING]
+> 下载、安装或使用阅读 Vox，即表示使用者应自行了解并遵守所在地法律法规、目标网站服务条款及知识产权规则。本项目明确反对利用软件实施侵权传播、未授权数据获取、绕过访问控制、破坏网络服务或其他违法违规行为。
+
+- 阅读 Vox 是用户可配置的本地阅读与网页内容解析工具，默认不预置、不内置、不销售任何第三方网站内容、账号、数据资源或书源规则。
+- 开发者不经营内容平台，不提供小说存储、发布、传播或聚合服务，也不参与第三方书源、规则社区、群组或网站的运营。
+- 用户导入书源后，网络请求由用户设备直接发往目标网站。规则的来源、合法性、准确性、安全性和适用性应由用户自行核实。
+- 用户应确保自己有权访问、缓存、转换、朗读或使用相关内容，并遵守目标网站的 robots、访问限制、服务协议和版权要求。
+- 第三方书源可能包含 JavaScript、请求外部接口或发生变化；本项目不对第三方内容的可用性、真实性、安全性及由此产生的损失作保证。
+- AI 模型、云 TTS、HTTP TTS、WebDAV 等服务由用户自行选择。发送给服务方的数据、生成内容及费用均受相应服务条款约束，使用者应自行确认授权与合规性。
+- “阅读 Vox / Legado Vox”是独立维护的二次开发项目，不是 gedoor/legado 或 HapeLee/legado-with-MD3 的官方发行版；上游作者不对本项目新增代码、发布包或服务承担责任。
+- GPL-3.0 授权适用于本仓库中受其约束的软件源码，不代表授予任何第三方内容、书源、商标、封面、字体或在线服务的权利。
+
+如权利人认为本仓库直接托管的内容侵犯其合法权益，可通过 GitHub Issues 提交包含权属证明、具体位置和处理请求的通知；第三方网站或规则平台上的内容应优先联系其实际托管方。更完整的协议可在应用“关于 → 免责声明”中查看。本节参考了 [gedoor/legado 的法律公告](https://github.com/gedoor/legado) 与 [legado-with-MD3 的用户协议及免责声明](https://github.com/HapeLee/legado-with-MD3#%EF%B8%8F-%E7%94%A8%E6%88%B7%E5%8D%8F%E8%AE%AE%E4%B8%8E%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E)，并结合阅读 Vox 的实际网络与 AI 功能重新表述。
+
 ## 通知与后台播放
 
 Android 13 及以上版本会在首次开始朗读或音频播放时请求通知权限，用于显示媒体控制和下载进度。拒绝通知权限不会被当作朗读失败，但系统可能不在通知栏展示完整控制器。
@@ -178,8 +194,10 @@ RELEASE_KEY_PASSWORD=your_key_password
 
 Legado Vox 是独立维护的二次开发项目，主要基于：
 
-- [gedoor/legado](https://github.com/gedoor/legado)
-- [HapeLee/legado-with-MD3](https://github.com/HapeLee/legado-with-MD3)
-- [Autsunset/VoxEngine](https://github.com/Autsunset/VoxEngine)
+- [gedoor/legado](https://github.com/gedoor/legado)：核心阅读能力、书源规则体系与长期社区积累。
+- [HapeLee/legado-with-MD3](https://github.com/HapeLee/legado-with-MD3)：Material Design 3 界面、Compose 迁移和分支功能基础。
+- [Autsunset/VoxEngine](https://github.com/Autsunset/VoxEngine)：MiMo AI TTS 接入思路与实现来源。
 
-感谢上述项目、依赖库和所有贡献者。上游代码的著作权归原作者所有；本仓库继续遵循 [GPL-3.0](LICENSE) 的要求。
+同时感谢上游 README 中列出的 [Luoyacheng/legado](https://github.com/Luoyacheng/legado)、[komikku-app/komikku](https://github.com/komikku-app/komikku)、[FoedusProgramme/Gramophone](https://github.com/FoedusProgramme/Gramophone)、[MaterialKolor](https://github.com/jordond/MaterialKolor)、[Reorderable](https://github.com/Calvin-LL/Reorderable)，以及本项目使用的其他开源库和贡献者。
+
+上游代码、设计与资源的著作权归各自作者所有。本项目保留原有许可证和版权信息，并继续遵循 [GPL-3.0](LICENSE) 的源码开放与再分发要求。
