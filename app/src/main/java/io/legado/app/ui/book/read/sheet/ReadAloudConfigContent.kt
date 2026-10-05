@@ -248,6 +248,24 @@ fun ReadAloudConfigContent(
                             onIntent(ReadBookIntent.ApplyPreDownloadNum(it.toInt()))
                         },
                     )
+                    TinySwitchSettingItem(
+                        title = "段落上下文（MiMo）",
+                        description = "上下文只用于理解语气，不加入朗读正文。重新开始听书后生效。",
+                        checked = state.ttsContextEnabled,
+                        onCheckedChange = { onIntent(ReadBookIntent.SetTtsContextEnabled(it)) },
+                    )
+                    SliderSettingItem(
+                        title = "提前缓冲页数",
+                        description = "提前准备 ${state.ttsBufferPages} 页（每页按 600 字估算），当前章准备好后才预缓存后续章节。",
+                        value = state.ttsBufferPages.toFloat(), defaultValue = 2f, valueRange = 1f..20f,
+                        onValueChange = { onIntent(ReadBookIntent.SetTtsBufferPages(it.toInt())) },
+                    )
+                    SliderSettingItem(
+                        title = "单次合成字数上限",
+                        description = "${state.ttsChunkChars} 字；角色切换处仍会分段。重新开始听书后生效。",
+                        value = state.ttsChunkChars.toFloat(), defaultValue = 600f, valueRange = 180f..1800f,
+                        onValueChange = { onIntent(ReadBookIntent.SetTtsChunkChars(it.toInt())) },
+                    )
                     SliderSettingItem(
                         title = stringResource(R.string.tts_pre_synthesis_concurrency),
                         description = stringResource(

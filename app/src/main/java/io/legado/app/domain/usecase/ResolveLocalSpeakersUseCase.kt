@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 class ResolveLocalSpeakersUseCase(
     private val bookKnowledgeGateway: BookKnowledgeGateway,
     private val chapterSpeechGateway: ChapterSpeechGateway,
+    private val settingsGateway: io.legado.app.domain.gateway.ReadAloudSettingsGateway,
 ) {
 
     suspend operator fun invoke(
@@ -52,7 +53,10 @@ class ResolveLocalSpeakersUseCase(
                 updatedAt = profile.updatedAt,
             )
         }
+        val rules = io.legado.app.help.readaloud.resolve.SpeakerMatchRules.parseOrEmpty(settingsGateway.currentSettings.speakerMatchRulesJson)
         val characterRevision = buildString {
+            append(io.legado.app.utils.GSON.toJson(rules))
+            append(':')
             append(LocalCharacterSpeakerResolver.VERSION)
             append(':')
             append(SpeechIdentity.characterRevision(characters))
@@ -80,6 +84,7 @@ class ResolveLocalSpeakersUseCase(
             paragraphs = paragraphs,
             segments = resetSegments,
             characters = characters,
+            rules = rules,
         )
         val status = if (resolved.any { it.needsSpeakerResolution }) {
             SpeechAnalysisStatus.Partial

@@ -94,7 +94,11 @@ class ReadAloudDelegate(
                         speechAnalysisMode = prefs.speechAnalysisMode,
                         useMultiSpeaker = prefs.useMultiSpeaker,
                         defaultReadAloudInterface = prefs.defaultInterface,
-                        preDownloadNum = host.preDownloadNum,
+                        preDownloadNum = prefs.audioPreDownloadNum,
+                        preSynthesisConcurrency = prefs.ttsPreSynthesisConcurrency,
+                        ttsContextEnabled = prefs.ttsContextEnabled,
+                        ttsBufferPages = prefs.ttsBufferPages,
+                        ttsChunkChars = prefs.ttsChunkChars,
                         audioCacheCleanTime = prefs.audioCacheCleanTime,
                         readAloudParagraphInterval = prefs.ttsParagraphInterval,
                     )
@@ -228,7 +232,7 @@ class ReadAloudDelegate(
 
     fun applyPreDownloadNum(value: Int) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            readSettingsRepository.setPreDownloadNum(value)
+            readAloudSettingsRepository.update { it.copy(audioPreDownloadNum = value.coerceIn(0, 100)) }
         }
         host.updateState { it.copy(preDownloadNum = value) }
     }
@@ -240,6 +244,18 @@ class ReadAloudDelegate(
             }
         }
         host.updateState { it.copy(preSynthesisConcurrency = value.coerceIn(1, 8)) }
+    }
+
+    fun setTtsContextEnabled(value: Boolean) = scope.launch {
+        readAloudSettingsRepository.update { it.copy(ttsContextEnabled = value) }
+    }
+
+    fun setTtsBufferPages(value: Int) = scope.launch {
+        readAloudSettingsRepository.update { it.copy(ttsBufferPages = value.coerceIn(1, 20)) }
+    }
+
+    fun setTtsChunkChars(value: Int) = scope.launch {
+        readAloudSettingsRepository.update { it.copy(ttsChunkChars = value.coerceIn(180, 1800)) }
     }
 
     fun applyAudioCacheCleanTime(value: Int) {

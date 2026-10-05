@@ -11,6 +11,8 @@ data class BookVoiceCastingUiState(
     val items: ImmutableList<VoiceCastingItemUi> = persistentListOf(),
     val voices: ImmutableList<VoiceOptionUi> = persistentListOf(),
     val picker: VoicePickerUi? = null,
+    val rulesEditor: String? = null,
+    val rulesError: String = "",
 )
 
 @Stable
@@ -53,6 +55,14 @@ enum class CastingSubjectKind {
 }
 
 sealed interface BookVoiceCastingIntent {
+    data object OpenRules : BookVoiceCastingIntent
+    data object DismissRules : BookVoiceCastingIntent
+    data class EditRules(val json: String) : BookVoiceCastingIntent
+    data object SaveRules : BookVoiceCastingIntent
+    data object ImportRules : BookVoiceCastingIntent
+    data object ExportRules : BookVoiceCastingIntent
+    data class ImportRulesFile(val uri: android.net.Uri) : BookVoiceCastingIntent
+    data class ExportRulesFile(val uri: android.net.Uri) : BookVoiceCastingIntent
     data object Refresh : BookVoiceCastingIntent
     data class OpenVoicePicker(val subjectType: String, val subjectId: String) :
         BookVoiceCastingIntent
@@ -62,5 +72,7 @@ sealed interface BookVoiceCastingIntent {
 }
 
 sealed interface BookVoiceCastingEffect {
+    data object OpenRulesImportPicker : BookVoiceCastingEffect
+    data object OpenRulesExportPicker : BookVoiceCastingEffect
     data class ShowToast(val message: String) : BookVoiceCastingEffect
 }

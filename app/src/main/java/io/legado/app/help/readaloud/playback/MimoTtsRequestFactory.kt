@@ -13,8 +13,12 @@ internal object MimoTtsRequestFactory {
         style: String,
         instructions: String,
         options: MimoTtsOptions,
+        context: String = "",
     ): String {
-        val directions = listOf(instructions, style)
+        val contextInstruction = context.takeIf(String::isNotBlank)?.let {
+            "以下小说上下文仅供理解人物情绪与语气，不要朗读或复述。只朗读 assistant 消息中的正文。\n<上下文>\n${it.take(1200)}\n</上下文>"
+        }.orEmpty()
+        val directions = listOf(instructions, style, contextInstruction)
             .map(String::trim)
             .filter { it.isNotBlank() && it != NO_STYLE }
             .joinToString("。")

@@ -303,7 +303,7 @@ abstract class BaseReadAloudService : BaseService(),
             )
             if (generation != prepareReadAloudGeneration) return@execute
             val preparedPlaybackQueue = runCatching {
-                ReadAloudPlaybackQueue.from(preparedSpeechPlan)
+                ReadAloudPlaybackQueue.from(preparedSpeechPlan, get<io.legado.app.domain.gateway.ReadAloudSettingsGateway>(io.legado.app.domain.gateway.ReadAloudSettingsGateway::class.java).currentSettings.ttsChunkChars.coerceIn(180, 1800))
             }.onFailure {
                 AppLog.put("创建多角色播放队列失败，使用原朗读方式\n${it.localizedMessage}", it)
             }.getOrDefault(ReadAloudPlaybackQueue.Empty)

@@ -5,6 +5,16 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ReadAloudPlaybackQueueTest {
+    @Test fun `long cues split without losing offsets roles or paragraph context`() {
+        val text = "她说。".repeat(100) + "😀结尾。"
+        val chunks = ReadAloudPlaybackQueue.from(listOf(item("她含泪。", 0, 0), item(text, 5, 1, SpeechRoleType.Character), item("他转身。", 5 + text.length, 2)), 180).cues
+        val dialogue = chunks.filter { it.roleType == SpeechRoleType.Character }
+        assertEquals(text, dialogue.joinToString("") { it.text })
+        org.junit.Assert.assertTrue(dialogue.all { it.text.length <= 180 && it.context.contains("她含泪。") && it.context.contains("他转身。") })
+        assertEquals(5, dialogue.first().chapterStart)
+        assertEquals(5 + text.length, dialogue.last().chapterEnd)
+    }
+
 
     private val queue = ReadAloudPlaybackQueue.from(
         listOf(

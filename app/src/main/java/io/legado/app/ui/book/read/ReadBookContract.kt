@@ -276,6 +276,9 @@ data class ReadBookUiState(
     // 正文编辑域状态见 ContentEditUiState —— 由 ReadContentEditDelegate 独立持有
     val preDownloadNum: Int = 10,
     val preSynthesisConcurrency: Int = 3,
+    val ttsContextEnabled: Boolean = true,
+    val ttsBufferPages: Int = 2,
+    val ttsChunkChars: Int = 600,
     val audioCacheCleanTime: Int = 10,
     // Read aloud config
     val readAloudIgnoreAudioFocus: Boolean = false,
@@ -757,6 +760,9 @@ sealed interface ReadBookIntent {
     data class SelectReadAloudConfigTab(val tab: ReadAloudConfigTab) : ReadBookIntent
     data class ApplyPreDownloadNum(val value: Int) : ReadBookIntent
     data class ApplyPreSynthesisConcurrency(val value: Int) : ReadBookIntent
+    data class SetTtsContextEnabled(val value: Boolean) : ReadBookIntent
+    data class SetTtsBufferPages(val value: Int) : ReadBookIntent
+    data class SetTtsChunkChars(val value: Int) : ReadBookIntent
     data class ApplyAudioCacheCleanTime(val value: Int) : ReadBookIntent
     data class ApplyParagraphInterval(val value: Int) : ReadBookIntent
     data class SetReadAloudIgnoreAudioFocus(val value: Boolean) : ReadBookIntent

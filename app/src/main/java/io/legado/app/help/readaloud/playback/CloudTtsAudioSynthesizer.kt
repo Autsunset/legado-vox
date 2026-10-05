@@ -12,6 +12,7 @@ import io.legado.app.domain.model.readaloud.SpeechRoleType
 import io.legado.app.utils.GSON
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 class CloudTtsAudioSynthesizer(
@@ -48,6 +49,7 @@ class CloudTtsAudioSynthesizer(
         characterPerformance: CharacterPerformanceProfile? = null,
         roleType: SpeechRoleType = SpeechRoleType.Unknown,
         globalSpeed: Float = 1f,
+        context: String = "",
     ): Boolean = withContext(Dispatchers.IO) {
         val engine = engineGateway.get(voice.engineId) ?: return@withContext false
         if (!engine.enabled) return@withContext false
@@ -79,6 +81,7 @@ class CloudTtsAudioSynthesizer(
             engine = engine,
             request = CloudTtsSynthesisRequest(
                 text = text,
+                context = context,
                 voiceId = voice.speakerId,
                 locale = config.locale,
                 style = mappedStyle ?: config.style,
@@ -121,7 +124,13 @@ class CloudTtsAudioSynthesizer(
             audio
         }
         output.parentFile?.mkdirs()
-        output.writeBytes(outputAudio.bytes)
+        kotlinx.coroutines.currentCoroutineContext().ensureActive()
+        val temporary = File.createTempFile("tts-", ".tmp", output.parentFile)
+        try {
+            temporary.writeBytes(outputAudio.bytes)
+            require(temporary.length() > 0) { "语音服务返回空音频" }
+            if (!temporary.renameTo(output)) error("无法保存音频缓存")
+        } finally { temporary.delete() }
         return output.length() > 0
     }
 }

@@ -8,14 +8,14 @@ import org.junit.Test
 class ReadAloudSettingsMappingTest {
 
     @Test
-    fun `朗读设置 23 键写映射逐字段对应`() {
+    fun `朗读设置含合成选项的写映射逐字段对应`() {
         readAloudMappingSamples().forEach { settings ->
             assertEquals(settings.expectedPrefMap(), settings.toPrefMap())
         }
     }
 
     @Test
-    fun `朗读设置 23 键读映射逐字段对应`() {
+    fun `朗读设置含合成选项的读映射逐字段对应`() {
         readAloudMappingSamples().forEach { expected ->
             assertEquals(expected, expected.expectedPrefMap().toTestPreferences().toReadAloudSettings())
         }
@@ -81,6 +81,10 @@ private fun readAloudMappingSamples(): List<ReadAloudSettings> {
         audioPreDownloadNum = 66,
         capsuleAutoCollapse = false,
         ttsPreSynthesisConcurrency = 7,
+        speakerMatchRulesJson = "[{\"character\":\"张三\",\"pattern\":\"小张.*\"}]",
+        ttsContextEnabled = false,
+        ttsBufferPages = 9,
+        ttsChunkChars = 1200,
     )
     return listOf(
         base,
@@ -125,4 +129,8 @@ private fun ReadAloudSettings.expectedPrefMap(): Map<String, Any?> = mapOf(
     PreferKey.contentSelectSpeakMod to contentSelectSpeakMode,
     PreferKey.audioPreDownloadNum to audioPreDownloadNum,
     PreferKey.ttsPreSynthesisConcurrency to ttsPreSynthesisConcurrency,
+    "speakerMatchRules" to speakerMatchRulesJson,
+    "ttsContextEnabled" to ttsContextEnabled,
+    "ttsBufferPages" to ttsBufferPages,
+    "ttsChunkChars" to ttsChunkChars,
 )

@@ -69,6 +69,7 @@ fun BookVoiceCastingScreen(
         effects.collectLatest { effect ->
             when (effect) {
                 is BookVoiceCastingEffect.ShowToast -> context.toastOnUi(effect.message)
+                BookVoiceCastingEffect.OpenRulesImportPicker, BookVoiceCastingEffect.OpenRulesExportPicker -> Unit
             }
         }
     }
@@ -116,6 +117,28 @@ fun BookVoiceCastingScreen(
         }
     }
 
+    if (state.rulesEditor != null) {
+        AppModalBottomSheet(show = true, onDismissRequest = { onIntent(BookVoiceCastingIntent.DismissRules) }) {
+            Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                AppText("角色匹配规则", style = LegadoTheme.typography.titleMedium)
+                AppText("按数组顺序优先匹配。character 填角色名，pattern 填正则；afterDialogue 为 true 时匹配对话后的旁白；enabled 控制启停。未命中沿用默认识别。")
+                AppText("例如：[{\"character\":\"张三\",\"pattern\":\"小张.*笑道\",\"afterDialogue\":false,\"enabled\":true}]")
+                androidx.compose.material3.OutlinedTextField(
+                    value = state.rulesEditor,
+                    onValueChange = { onIntent(BookVoiceCastingIntent.EditRules(it)) },
+                    label = { AppText("规则 JSON") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
+                )
+                if (state.rulesError.isNotBlank()) AppText(state.rulesError, color = LegadoTheme.colorScheme.error)
+                androidx.compose.foundation.layout.Row {
+                    androidx.compose.material3.TextButton(onClick = { onIntent(BookVoiceCastingIntent.ImportRules) }) { AppText("导入文件") }
+                    androidx.compose.material3.TextButton(onClick = { onIntent(BookVoiceCastingIntent.ExportRules) }) { AppText("导出已保存规则") }
+                    androidx.compose.material3.Button(onClick = { onIntent(BookVoiceCastingIntent.SaveRules) }) { AppText("保存") }
+                }
+            }
+        }
+    }
+
     VoicePickerSheet(
         picker = state.picker,
         voices = state.voices,
@@ -140,6 +163,9 @@ private fun VoiceCastingList(
         ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        item(contentType = "rules") {
+            androidx.compose.material3.OutlinedButton(onClick = { onIntent(BookVoiceCastingIntent.OpenRules) }) { AppText("编辑角色匹配规则 / 导入导出") }
+        }
         item(contentType = "intro") {
             AppText(
                 text = stringResource(R.string.book_voice_casting_summary),
@@ -352,4 +378,30 @@ private fun voiceDescription(voice: VoiceOptionUi): String {
     } else {
         stringResource(R.string.voice_unavailable_named, engineType)
     }
+}
+
+@Composable
+fun BookVoiceCastingRouteScreen(
+    state: BookVoiceCastingUiState,
+    onIntent: (BookVoiceCastingIntent) -> Unit,
+    effects: Flow<BookVoiceCastingEffect>,
+    onBack: () -> Unit,
+    onManageCloudTts: () -> Unit,
+) {
+    val importPicker = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let { onIntent(BookVoiceCastingIntent.ImportRulesFile(it)) }
+    }
+    val exportPicker = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        uri?.let { onIntent(BookVoiceCastingIntent.ExportRulesFile(it)) }
+    }
+    LaunchedEffect(effects) {
+        effects.collectLatest { effect ->
+            when (effect) {
+                BookVoiceCastingEffect.OpenRulesImportPicker -> importPicker.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
+                BookVoiceCastingEffect.OpenRulesExportPicker -> exportPicker.launch("vox-speaker-rules.json")
+                is BookVoiceCastingEffect.ShowToast -> Unit
+            }
+        }
+    }
+    BookVoiceCastingScreen(state, onIntent, effects, onBack, onManageCloudTts)
 }

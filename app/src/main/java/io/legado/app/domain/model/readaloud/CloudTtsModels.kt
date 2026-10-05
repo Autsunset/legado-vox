@@ -133,6 +133,7 @@ data class CloudTtsVoiceDescriptor(
 
 data class CloudTtsSynthesisRequest(
     val text: String,
+    val context: String = "",
     val voiceId: String,
     val locale: String = "",
     val style: String = "",

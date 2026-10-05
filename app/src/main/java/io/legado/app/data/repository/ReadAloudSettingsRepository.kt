@@ -72,6 +72,10 @@ internal fun Preferences.toReadAloudSettings(): ReadAloudSettings = ReadAloudSet
     contentSelectSpeakMode = compatDsValue(ReadAloudKeys.ContentSelectSpeakMode, 0),
     audioPreDownloadNum = compatDsValue(ReadAloudKeys.AudioPreDownloadNum, 10),
     ttsPreSynthesisConcurrency = compatDsValue(ReadAloudKeys.PreSynthesisConcurrency, 3),
+    speakerMatchRulesJson = compatDsValue(ReadAloudKeys.SpeakerMatchRules, "[]"),
+    ttsContextEnabled = compatDsValue(ReadAloudKeys.TtsContextEnabled, true),
+    ttsBufferPages = compatDsValue(ReadAloudKeys.TtsBufferPages, 2),
+    ttsChunkChars = compatDsValue(ReadAloudKeys.TtsChunkChars, 600),
 )
 
 internal fun ReadAloudSettings.toPrefMap(): Map<String, Any?> = mapOf(
@@ -100,11 +104,19 @@ internal fun ReadAloudSettings.toPrefMap(): Map<String, Any?> = mapOf(
     PreferKey.contentSelectSpeakMod to contentSelectSpeakMode,
     PreferKey.audioPreDownloadNum to audioPreDownloadNum,
     PreferKey.ttsPreSynthesisConcurrency to ttsPreSynthesisConcurrency,
+    ReadAloudKeys.SpeakerMatchRules.name to speakerMatchRulesJson,
+    ReadAloudKeys.TtsContextEnabled.name to ttsContextEnabled,
+    ReadAloudKeys.TtsBufferPages.name to ttsBufferPages,
+    ReadAloudKeys.TtsChunkChars.name to ttsChunkChars,
 )
 
 private const val MEDIA_BUTTON_PER_NEXT = "mediaButtonPerNext"
 
 private object ReadAloudKeys {
+    val SpeakerMatchRules = stringPreferencesKey("speakerMatchRules")
+    val TtsContextEnabled = booleanPreferencesKey("ttsContextEnabled")
+    val TtsBufferPages = intPreferencesKey("ttsBufferPages")
+    val TtsChunkChars = intPreferencesKey("ttsChunkChars")
     val TtsParagraphInterval = intPreferencesKey(PreferKey.ttsParagraphInterval)
     val AudioCacheCleanTime = intPreferencesKey(PreferKey.audioCacheCleanTime)
     val IgnoreAudioFocus = booleanPreferencesKey(PreferKey.ignoreAudioFocus)

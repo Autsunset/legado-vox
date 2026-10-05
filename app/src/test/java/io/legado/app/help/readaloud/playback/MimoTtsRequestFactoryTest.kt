@@ -9,6 +9,18 @@ import org.junit.Test
 
 class MimoTtsRequestFactoryTest {
     @Test
+    fun `context influences directions but never changes spoken assistant text`() {
+        for (model in listOf(MimoTtsCatalog.MODEL_PRESET, MimoTtsCatalog.MODEL_CLONE, MimoTtsCatalog.MODEL_DESIGN)) {
+            val json = JsonParser.parseString(MimoTtsRequestFactory.build(
+                model, "voice", "不要走。", "悲伤", "", MimoTtsOptions(), "她眼中含泪。"
+            )).asJsonObject
+            val messages = json.getAsJsonArray("messages")
+            org.junit.Assert.assertTrue(messages[0].asJsonObject["content"].asString.contains("她眼中含泪。"))
+            assertEquals("不要走。", messages[1].asJsonObject["content"].asString)
+        }
+    }
+
+    @Test
     fun `preset request matches VoxEngine chat completion contract`() {
         val json = JsonParser.parseString(
             MimoTtsRequestFactory.build(

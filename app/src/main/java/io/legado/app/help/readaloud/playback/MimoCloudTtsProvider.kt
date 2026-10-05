@@ -48,6 +48,7 @@ internal class MimoCloudTtsProvider(
             style = request.style,
             instructions = request.instructions,
             options = options,
+            context = request.context,
         )
         val httpRequest = Request.Builder()
             .url(MimoTtsRequestFactory.endpoint(engine.baseUrl))

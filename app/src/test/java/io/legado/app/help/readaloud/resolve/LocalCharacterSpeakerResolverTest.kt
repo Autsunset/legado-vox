@@ -10,6 +10,22 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class LocalCharacterSpeakerResolverTest {
+    @Test fun `custom rules match actions and aliases and survive JSON export`() {
+        val p = paragraph("小张握紧拳头：“不答应！”")
+        val rules = SpeakerMatchRules.parse("[{\"character\":\"张三\",\"pattern\":\"小张.*\"}]")
+        assertEquals(rules, SpeakerMatchRules.parse(SpeakerMatchRules.serialize(rules)))
+        val result = LocalCharacterSpeakerResolver.resolve(listOf(p), listOf(dialogue(p, "“不答应！”")), listOf(character("zhang", "张三")), rules)
+        assertEquals("zhang", result.single().characterId)
+        val disabled = LocalCharacterSpeakerResolver.resolve(listOf(p), listOf(dialogue(p, "“不答应！”")), listOf(character("zhang", "张三")), rules.map { it.copy(enabled = false) })
+        assertNull(disabled.single().characterId)
+    }
+
+    @Test fun `invalid imports cannot overwrite saved rules`() {
+        for (json in listOf("{}", "[null]", "[{\"character\":\"张三\",\"pattern\":\"[\"}]")) {
+            org.junit.Assert.assertTrue(runCatching { SpeakerMatchRules.parse(json) }.isFailure)
+        }
+    }
+
 
     @Test
     fun `resolves explicit speaker before quote`() {

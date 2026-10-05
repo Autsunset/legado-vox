@@ -1291,6 +1291,9 @@ class ReadBookViewModel(
             }
             is ReadBookIntent.ApplyPreDownloadNum ->
                 readAloudDelegate.applyPreDownloadNum(intent.value)
+            is ReadBookIntent.SetTtsContextEnabled -> readAloudDelegate.setTtsContextEnabled(intent.value)
+            is ReadBookIntent.SetTtsBufferPages -> readAloudDelegate.setTtsBufferPages(intent.value)
+            is ReadBookIntent.SetTtsChunkChars -> readAloudDelegate.setTtsChunkChars(intent.value)
             is ReadBookIntent.ApplyPreSynthesisConcurrency ->
                 readAloudDelegate.applyPreSynthesisConcurrency(intent.value)
             is ReadBookIntent.ApplyAudioCacheCleanTime ->

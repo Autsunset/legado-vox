@@ -8,7 +8,7 @@ import io.legado.app.domain.model.readaloud.SpeechRoleType
 
 object LocalCharacterSpeakerResolver {
 
-    const val VERSION = "local-character-resolver-v1"
+    const val VERSION = "local-character-resolver-v2"
 
     private const val CONTEXT_LENGTH = 64
     private val speechVerb =
@@ -19,6 +19,7 @@ object LocalCharacterSpeakerResolver {
         paragraphs: List<CanonicalSpeechParagraph>,
         segments: List<ChapterSpeechSegment>,
         characters: List<SpeakerCharacter>,
+        rules: List<SpeakerMatchRule> = emptyList(),
     ): List<ChapterSpeechSegment> {
         if (segments.isEmpty() || characters.isEmpty()) return segments
         val paragraphsByIndex = paragraphs.associateBy(CanonicalSpeechParagraph::index)
@@ -26,12 +27,20 @@ object LocalCharacterSpeakerResolver {
         if (aliases.isEmpty()) return segments
 
         return segments.map { segment ->
-            if (!segment.shouldResolve) return@map segment
+            if (segment.userLocked || segment.roleType !in setOf(SpeechRoleType.Character, SpeechRoleType.Thought)) return@map segment
+            if (!segment.shouldResolve && rules.none { it.enabled }) return@map segment
             val paragraph = paragraphsByIndex[segment.paragraphIndex] ?: return@map segment
             val start = segment.start.coerceIn(0, paragraph.text.length)
             val end = segment.end.coerceIn(start, paragraph.text.length)
             val before = paragraph.text.substring(0, start).takeLast(CONTEXT_LENGTH)
             val after = paragraph.text.substring(end).take(CONTEXT_LENGTH)
+            val ruleCharacter = rules.asSequence().filter { it.enabled }.firstNotNullOfOrNull { rule ->
+                val context = if (rule.afterDialogue) after else before
+                if (runCatching { Regex(rule.pattern).containsMatchIn(context) }.getOrDefault(false)) {
+                    characters.singleOrNull { it.name == rule.character }
+                } else null
+            }
+            if (ruleCharacter == null && !segment.shouldResolve) return@map segment
             val matches = aliases.asSequence()
                 .filter { candidate ->
                     candidate.matchesBefore(before, segment.roleType) ||
@@ -41,7 +50,7 @@ object LocalCharacterSpeakerResolver {
                 .distinctBy(SpeakerCharacter::id)
                 .take(2)
                 .toList()
-            val character = matches.singleOrNull() ?: return@map segment
+            val character = ruleCharacter ?: matches.singleOrNull() ?: return@map segment
             segment.copy(
                 characterId = character.id,
                 characterName = character.name,

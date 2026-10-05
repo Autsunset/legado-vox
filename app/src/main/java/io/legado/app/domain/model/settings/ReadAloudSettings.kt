@@ -26,4 +26,8 @@ data class ReadAloudSettings(
     val contentSelectSpeakMode: Int = 0,
     val audioPreDownloadNum: Int = 10,
     val ttsPreSynthesisConcurrency: Int = 3,
+    val speakerMatchRulesJson: String = "[]",
+    val ttsContextEnabled: Boolean = true,
+    val ttsBufferPages: Int = 2,
+    val ttsChunkChars: Int = 600,
 )

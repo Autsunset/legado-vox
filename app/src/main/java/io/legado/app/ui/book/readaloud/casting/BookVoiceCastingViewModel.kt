@@ -26,6 +26,7 @@ class BookVoiceCastingViewModel(
     private val bookUrl: String,
     private val bookKnowledgeGateway: BookKnowledgeGateway,
     private val voiceGateway: ReadAloudVoiceGateway,
+    private val settingsGateway: io.legado.app.domain.gateway.ReadAloudSettingsGateway,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BookVoiceCastingUiState(bookUrl = bookUrl))
@@ -45,6 +46,14 @@ class BookVoiceCastingViewModel(
 
     fun onIntent(intent: BookVoiceCastingIntent) {
         when (intent) {
+            BookVoiceCastingIntent.OpenRules -> _uiState.update { it.copy(rulesEditor = settingsGateway.currentSettings.speakerMatchRulesJson, rulesError = "") }
+            BookVoiceCastingIntent.DismissRules -> _uiState.update { it.copy(rulesEditor = null) }
+            is BookVoiceCastingIntent.EditRules -> _uiState.update { it.copy(rulesEditor = intent.json, rulesError = "") }
+            BookVoiceCastingIntent.SaveRules -> saveRules()
+            BookVoiceCastingIntent.ImportRules -> _effects.tryEmit(BookVoiceCastingEffect.OpenRulesImportPicker)
+            BookVoiceCastingIntent.ExportRules -> _effects.tryEmit(BookVoiceCastingEffect.OpenRulesExportPicker)
+            is BookVoiceCastingIntent.ImportRulesFile -> importRules(intent.uri)
+            is BookVoiceCastingIntent.ExportRulesFile -> exportRules(intent.uri)
             BookVoiceCastingIntent.Refresh -> load()
             is BookVoiceCastingIntent.OpenVoicePicker -> openVoicePicker(intent)
             BookVoiceCastingIntent.DismissVoicePicker -> {
@@ -53,6 +62,52 @@ class BookVoiceCastingViewModel(
             is BookVoiceCastingIntent.AssignVoice -> assignVoice(intent.voiceId)
             BookVoiceCastingIntent.ClearBinding -> clearBinding()
         }
+    }
+
+    private fun saveRules() = viewModelScope.launch {
+        try {
+            val rules = withContext(Dispatchers.Default) {
+                io.legado.app.help.readaloud.resolve.SpeakerMatchRules.parse(_uiState.value.rulesEditor ?: return@withContext emptyList())
+            }
+            val json = io.legado.app.help.readaloud.resolve.SpeakerMatchRules.serialize(rules)
+            settingsGateway.update { it.copy(speakerMatchRulesJson = json) }
+            _uiState.update { it.copy(rulesEditor = null, rulesError = "") }
+            _effects.tryEmit(BookVoiceCastingEffect.ShowToast("规则已保存，重新开始听书后生效"))
+        } catch (e: CancellationException) { throw e
+        } catch (e: Exception) { _uiState.update { it.copy(rulesError = e.message ?: "规则无效") } }
+    }
+
+    private fun importRules(uri: android.net.Uri) = viewModelScope.launch {
+        try {
+            val json = withContext(Dispatchers.IO) {
+                val text = appCtx.contentResolver.openInputStream(uri)?.use { input ->
+                    val bytes = java.io.ByteArrayOutputStream()
+                    val block = ByteArray(8192)
+                    while (bytes.size() <= 1_000_000) {
+                        val n = input.read(block, 0, minOf(block.size, 1_000_001 - bytes.size()))
+                        if (n < 0) break
+                        bytes.write(block, 0, n)
+                    }
+                    require(bytes.size() <= 1_000_000) { "规则文件过大" }
+                    bytes.toString("UTF-8")
+                } ?: error("无法读取文件")
+                io.legado.app.help.readaloud.resolve.SpeakerMatchRules.serialize(io.legado.app.help.readaloud.resolve.SpeakerMatchRules.parse(text))
+            }
+            // Show imported rules for review; Save is the only operation that replaces preferences.
+            _uiState.update { it.copy(rulesEditor = json, rulesError = "") }
+        } catch (e: CancellationException) { throw e
+        } catch (e: Exception) { _effects.tryEmit(BookVoiceCastingEffect.ShowToast("导入失败：${e.message}")) }
+    }
+
+    private fun exportRules(uri: android.net.Uri) = viewModelScope.launch {
+        try {
+            val json = settingsGateway.currentSettings.speakerMatchRulesJson
+            withContext(Dispatchers.IO) {
+                appCtx.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray(Charsets.UTF_8)) } ?: error("无法写入文件")
+            }
+            _effects.tryEmit(BookVoiceCastingEffect.ShowToast("规则已导出"))
+        } catch (e: CancellationException) { throw e
+        } catch (e: Exception) { _effects.tryEmit(BookVoiceCastingEffect.ShowToast("导出失败：${e.message}")) }
     }
 
     private fun load() {

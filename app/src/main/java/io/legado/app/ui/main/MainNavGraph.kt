@@ -73,7 +73,7 @@ import io.legado.app.ui.book.read.ReadBookViewModel
 import io.legado.app.ui.book.readRecord.ReadRecordOverviewRouteScreen
 import io.legado.app.ui.book.readRecord.ReadRecordRouteScreen
 import io.legado.app.ui.book.readaloud.cache.TtsCacheRouteScreen
-import io.legado.app.ui.book.readaloud.casting.BookVoiceCastingScreen
+import io.legado.app.ui.book.readaloud.casting.BookVoiceCastingRouteScreen
 import io.legado.app.ui.book.readaloud.casting.BookVoiceCastingViewModel
 import io.legado.app.ui.book.readaloud.cloudtts.CloudTtsEffect
 import io.legado.app.ui.book.readaloud.cloudtts.CloudTtsIntent
@@ -1068,7 +1068,7 @@ fun MainActivity.mainEntryProvider(
             key = "BookVoiceCasting:${route.bookUrl}",
             parameters = { parametersOf(route.bookUrl) },
         )
-        BookVoiceCastingScreen(
+        BookVoiceCastingRouteScreen(
             state = viewModel.uiState.collectAsStateWithLifecycle().value,
             onIntent = viewModel::onIntent,
             effects = viewModel.effects,
