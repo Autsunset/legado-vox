@@ -2,7 +2,10 @@ package io.legado.app.ui.book.read.sheet
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.PredictiveBackHandler
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Headphones
@@ -43,12 +43,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -64,11 +66,14 @@ import io.legado.app.ui.theme.LegadoTheme
 import io.legado.app.ui.theme.ProvideAppDensity
 import io.legado.app.ui.theme.ProvideThemeOverride
 import io.legado.app.ui.theme.ThemeOverrideState
+import io.legado.app.ui.widget.components.AppScaffold
 import io.legado.app.ui.widget.components.button.series.MediumTonalButton
 import io.legado.app.ui.widget.components.menuItem.RoundDropdownMenu
 import io.legado.app.ui.widget.components.menuItem.RoundDropdownMenuItem
 import io.legado.app.ui.widget.components.settingItem.TinySliderSettingItem
 import io.legado.app.ui.widget.components.settingItem.TinySwitchSettingItem
+import io.legado.app.ui.widget.components.topbar.GlassMediumFlexibleTopAppBar
+import io.legado.app.ui.widget.components.topbar.TopBarNavigationButton
 
 enum class ReadAloudPage {
     Config,
@@ -90,10 +95,9 @@ fun ReadAloudScreen(
         initialValue = Hidden,
         enabledValues = setOf(Hidden, Expanded),
     )
-    val isPlayer = page == ReadAloudPage.Player
     var backProgress by remember { mutableFloatStateOf(0f) }
     val predictiveBackOffset = with(LocalDensity.current) { 120.dp.toPx() }
-    var configParentIsPlayer by remember { mutableStateOf(false) }
+    var configParentIsPlayer by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(page) {
         when (page) {
             ReadAloudPage.Player -> configParentIsPlayer = true
@@ -112,19 +116,54 @@ fun ReadAloudScreen(
             onIntent(ReadBookIntent.OpenClassicReadAloudControls)
         }
     }
-    if (page != null) {
+    // Keep settings in the navigation window so child transitions are not hidden by a dialog.
+    AnimatedVisibility(
+        visible = page == ReadAloudPage.Config,
+        enter = fadeIn(tween(220)),
+        exit = fadeOut(tween(160)),
+    ) {
+        ProvideAppDensity {
+            BackHandler(enabled = page == ReadAloudPage.Config, onBack = returnFromConfig)
+            AppScaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        // Own hit testing in card gaps without consuming child gestures.
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    },
+                topBar = {
+                    GlassMediumFlexibleTopAppBar(
+                        title = stringResource(R.string.aloud_config),
+                        navigationIcon = { TopBarNavigationButton(onClick = returnFromConfig) },
+                    )
+                },
+            ) { paddingValues ->
+                ReadAloudConfigContent(
+                    state = state,
+                    playerState = playerState,
+                    onIntent = onIntent,
+                    onPlayerIntent = onPlayerIntent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp),
+                )
+            }
+        }
+    }
+    if (page == ReadAloudPage.Player) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             sheetState = sheetState,
-            modifier = (if (isPlayer) Modifier.fillMaxSize() else Modifier)
+            modifier = Modifier.fillMaxSize()
                 .graphicsLayer { translationY = backProgress * predictiveBackOffset },
-            shape = if (isPlayer) RectangleShape else MaterialTheme.shapes.extraLarge,
-            sheetMaxWidth = if (isPlayer) Dp.Unspecified else 640.dp,
-            containerColor = if (isPlayer) {
-                Color.Transparent
-            } else {
-                LegadoTheme.colorScheme.surfaceContainer
-            },
+            shape = RectangleShape,
+            sheetMaxWidth = Dp.Unspecified,
+            containerColor = Color.Transparent,
             contentColor = LegadoTheme.colorScheme.onSurface,
             contentWindowInsets = {
                 WindowInsets(0, 0, 0, 0)
@@ -133,8 +172,7 @@ fun ReadAloudScreen(
             properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false),
         ) {
             ProvideAppDensity {
-                BackHandler(enabled = page == ReadAloudPage.Config, onBack = returnFromConfig)
-                PredictiveBackHandler(enabled = page != ReadAloudPage.Config) { progress ->
+                PredictiveBackHandler { progress ->
                     try {
                         progress.collect { event ->
                             backProgress = event.progress
@@ -145,52 +183,12 @@ fun ReadAloudScreen(
                         backProgress = 0f
                     }
                 }
-                AnimatedContent(
-                    targetState = page,
-                    label = "ReadAloudPage",
-                ) { targetPage ->
-                    when (targetPage) {
-                        ReadAloudPage.Config -> Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .windowInsetsPadding(WindowInsets.statusBars)
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                MediumTonalButton(
-                                    onClick = {
-                                        returnFromConfig()
-                                    },
-                                    icon = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.back),
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Text(
-                                    text = stringResource(R.string.aloud_config),
-                                    style = LegadoTheme.typography.titleLarge,
-                                )
-                            }
-                            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                            ReadAloudConfigContent(
-                                state = state,
-                                playerState = playerState,
-                                onIntent = onIntent,
-                                onPlayerIntent = onPlayerIntent,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 16.dp)
-                            )
-                        }
-
-                        ReadAloudPage.Player -> ProvideThemeOverride(playerTheme) {
-                            ReadAloudPlayerScreenContent(
-                                state = playerState,
-                                onIntent = onPlayerIntent,
-                                onBack = onDismissRequest,
-                            )
-                        }
-                    }
+                ProvideThemeOverride(playerTheme) {
+                    ReadAloudPlayerScreenContent(
+                        state = playerState,
+                        onIntent = onPlayerIntent,
+                        onBack = onDismissRequest,
+                    )
                 }
             }
         }

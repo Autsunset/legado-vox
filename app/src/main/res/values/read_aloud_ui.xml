@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_casting_rules_title">Character Matching Rules</string>
+    <string name="voice_casting_rules_entry_summary">Edit matching rules, or import and export rule files</string>
+    <string name="voice_casting_rules_summary">Rules match in array order. Use character for the name and pattern for a regular expression. Set afterDialogue to true to match narration after dialogue, and enabled to turn a rule on or off. Unmatched text uses automatic recognition.</string>
+    <string name="voice_casting_rules_example">Example: [{\"character\":\"Alice\",\"pattern\":\"Alice.*said\",\"afterDialogue\":false,\"enabled\":true}]</string>
+    <string name="voice_casting_rules_json">Rules JSON</string>
+    <string name="voice_casting_export_saved_rules">Export saved rules</string>
+</resources>

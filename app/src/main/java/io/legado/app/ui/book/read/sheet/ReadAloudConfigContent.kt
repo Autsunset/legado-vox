@@ -47,7 +47,7 @@ fun ReadAloudConfigContent(
         }
     }
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
+        snapshotFlow { pagerState.settledPage }
             .distinctUntilChanged()
             .collect { page ->
                 ReadAloudConfigTab.entries.getOrNull(page)?.let { tab ->
@@ -80,7 +80,7 @@ fun ReadAloudConfigContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(top = 8.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+                    .padding(top = 8.dp, bottom = 16.dp),
             ) {
                 if (page == 0) {
                     TinyDropdownSettingItem(

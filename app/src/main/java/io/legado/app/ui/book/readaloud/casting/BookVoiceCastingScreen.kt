@@ -1,48 +1,47 @@
 package io.legado.app.ui.book.readaloud.casting
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.legado.app.R
 import io.legado.app.domain.model.readaloud.ReadAloudVoice
+import io.legado.app.ui.book.readaloud.ReadAloudSettingsCard
 import io.legado.app.ui.theme.LegadoTheme
 import io.legado.app.ui.theme.adaptiveContentPadding
 import io.legado.app.ui.widget.components.AppScaffold
-import io.legado.app.ui.widget.components.card.GlassCard
+import io.legado.app.ui.widget.components.AppTextField
+import io.legado.app.ui.widget.components.button.series.MediumTonalButton
 import io.legado.app.ui.widget.components.icon.AppIcon
 import io.legado.app.ui.widget.components.modalBottomSheet.AppModalBottomSheet
 import io.legado.app.ui.widget.components.settingItem.TinySettingItem
-import io.legado.app.ui.widget.components.text.AnimatedTextLine
 import io.legado.app.ui.widget.components.text.AppText
 import io.legado.app.ui.widget.components.topbar.GlassMediumFlexibleTopAppBar
 import io.legado.app.ui.widget.components.topbar.GlassTopAppBarDefaults
@@ -117,24 +116,56 @@ fun BookVoiceCastingScreen(
         }
     }
 
-    if (state.rulesEditor != null) {
-        AppModalBottomSheet(show = true, onDismissRequest = { onIntent(BookVoiceCastingIntent.DismissRules) }) {
-            Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                AppText("角色匹配规则", style = LegadoTheme.typography.titleMedium)
-                AppText("按数组顺序优先匹配。character 填角色名，pattern 填正则；afterDialogue 为 true 时匹配对话后的旁白；enabled 控制启停。未命中沿用默认识别。")
-                AppText("例如：[{\"character\":\"张三\",\"pattern\":\"小张.*笑道\",\"afterDialogue\":false,\"enabled\":true}]")
-                androidx.compose.material3.OutlinedTextField(
-                    value = state.rulesEditor,
-                    onValueChange = { onIntent(BookVoiceCastingIntent.EditRules(it)) },
-                    label = { AppText("规则 JSON") },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
+    AppModalBottomSheet(
+        data = state.rulesEditor,
+        onDismissRequest = { onIntent(BookVoiceCastingIntent.DismissRules) },
+        title = stringResource(R.string.voice_casting_rules_title),
+        endAction = {
+            MediumTonalButton(
+                onClick = { onIntent(BookVoiceCastingIntent.SaveRules) },
+                icon = Icons.Default.Check,
+                contentDescription = stringResource(R.string.save),
+            )
+        },
+    ) { rulesJson ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            AppText(
+                text = stringResource(R.string.voice_casting_rules_summary),
+                style = LegadoTheme.typography.bodySmall,
+                color = LegadoTheme.colorScheme.onSurfaceVariant,
+            )
+            AppText(
+                text = stringResource(R.string.voice_casting_rules_example),
+                style = LegadoTheme.typography.labelSmall,
+                color = LegadoTheme.colorScheme.onSurfaceVariant,
+            )
+            AppTextField(
+                value = rulesJson,
+                onValueChange = { onIntent(BookVoiceCastingIntent.EditRules(it)) },
+                label = stringResource(R.string.voice_casting_rules_json),
+                isError = state.rulesError.isNotBlank(),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
+            )
+            if (state.rulesError.isNotBlank()) {
+                AppText(state.rulesError, color = LegadoTheme.colorScheme.error)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                MediumTonalButton(
+                    onClick = { onIntent(BookVoiceCastingIntent.ImportRules) },
+                    text = stringResource(R.string.import_str),
+                    modifier = Modifier.weight(1f),
                 )
-                if (state.rulesError.isNotBlank()) AppText(state.rulesError, color = LegadoTheme.colorScheme.error)
-                androidx.compose.foundation.layout.Row {
-                    androidx.compose.material3.TextButton(onClick = { onIntent(BookVoiceCastingIntent.ImportRules) }) { AppText("导入文件") }
-                    androidx.compose.material3.TextButton(onClick = { onIntent(BookVoiceCastingIntent.ExportRules) }) { AppText("导出已保存规则") }
-                    androidx.compose.material3.Button(onClick = { onIntent(BookVoiceCastingIntent.SaveRules) }) { AppText("保存") }
-                }
+                MediumTonalButton(
+                    onClick = { onIntent(BookVoiceCastingIntent.ExportRules) },
+                    text = stringResource(R.string.voice_casting_export_saved_rules),
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }
@@ -161,24 +192,28 @@ private fun VoiceCastingList(
             top = contentPadding.calculateTopPadding() + 8.dp,
             bottom = contentPadding.calculateBottomPadding() + 16.dp,
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item(contentType = "rules") {
-            androidx.compose.material3.OutlinedButton(onClick = { onIntent(BookVoiceCastingIntent.OpenRules) }) { AppText("编辑角色匹配规则 / 导入导出") }
+            ReadAloudSettingsCard(
+                title = stringResource(R.string.voice_casting_rules_title),
+                description = stringResource(R.string.voice_casting_rules_entry_summary),
+                imageVector = Icons.Default.Edit,
+                onClick = { onIntent(BookVoiceCastingIntent.OpenRules) },
+            )
         }
         item(contentType = "intro") {
             AppText(
                 text = stringResource(R.string.book_voice_casting_summary),
-                style = LegadoTheme.typography.bodyMedium,
+                style = LegadoTheme.typography.bodySmall,
                 color = LegadoTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
             )
         }
         item(contentType = "section") {
             AppText(
                 text = stringResource(R.string.voice_fallback_roles),
-                style = LegadoTheme.typography.titleSmall,
-                modifier = Modifier.padding(vertical = 4.dp),
+                style = LegadoTheme.typography.labelMediumEmphasized,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
             )
         }
         items(
@@ -191,17 +226,14 @@ private fun VoiceCastingList(
         item(contentType = "section") {
             AppText(
                 text = stringResource(R.string.book_characters),
-                style = LegadoTheme.typography.titleSmall,
-                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                style = LegadoTheme.typography.labelMediumEmphasized,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
             )
         }
         if (characters.isEmpty()) {
             item(contentType = "empty") {
-                AppText(
-                    text = stringResource(R.string.character_empty_hint),
-                    style = LegadoTheme.typography.bodyMedium,
-                    color = LegadoTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 24.dp),
+                ReadAloudSettingsCard(
+                    title = stringResource(R.string.character_empty_hint),
                 )
             }
         } else {
@@ -228,8 +260,29 @@ private fun VoiceCastingCard(
         item.voiceName.isNotBlank() -> stringResource(R.string.voice_unavailable_named, item.voiceName)
         else -> stringResource(R.string.voice_unavailable)
     }
-    GlassCard(
-        modifier = Modifier.fillMaxWidth(),
+    ReadAloudSettingsCard(
+        title = title,
+        description = item.description,
+        detail = voiceText,
+        detailColor = if (item.hasBinding && !item.voiceAvailable) {
+            LegadoTheme.colorScheme.error
+        } else {
+            LegadoTheme.colorScheme.primary
+        },
+        imageVector = when (item.kind) {
+            CastingSubjectKind.Narrator -> Icons.AutoMirrored.Filled.MenuBook
+            CastingSubjectKind.Character -> Icons.Default.Person
+            else -> Icons.Default.RecordVoiceOver
+        },
+        trailingContent = if (item.hasBinding && !item.voiceAvailable) {
+            {
+                AppIcon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = stringResource(R.string.voice_unavailable),
+                    tint = LegadoTheme.colorScheme.error,
+                )
+            }
+        } else null,
         onClick = {
             onIntent(
                 BookVoiceCastingIntent.OpenVoicePicker(
@@ -238,61 +291,7 @@ private fun VoiceCastingCard(
                 )
             )
         },
-        containerColor = LegadoTheme.colorScheme.surfaceContainerLow,
-    ) {
-        ListItem(
-            colors = ListItemDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
-            leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(LegadoTheme.colorScheme.surfaceContainerHighest),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    AppIcon(
-                        imageVector = when (item.kind) {
-                            CastingSubjectKind.Narrator -> Icons.AutoMirrored.Filled.MenuBook
-                            CastingSubjectKind.Character -> Icons.Default.Person
-                            else -> Icons.Default.RecordVoiceOver
-                        },
-                        contentDescription = null,
-                    )
-                }
-            },
-            supportingContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    if (item.description.isNotBlank()) {
-                        AnimatedTextLine(
-                            text = item.description,
-                            style = LegadoTheme.typography.bodySmall,
-                            color = LegadoTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    AnimatedTextLine(
-                        text = voiceText,
-                        style = LegadoTheme.typography.labelMedium,
-                        color = if (item.hasBinding && !item.voiceAvailable) {
-                            LegadoTheme.colorScheme.error
-                        } else {
-                            LegadoTheme.colorScheme.primary
-                        },
-                    )
-                }
-            },
-            trailingContent = if (item.hasBinding && !item.voiceAvailable) {
-                {
-                    AppIcon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = stringResource(R.string.voice_unavailable),
-                        tint = LegadoTheme.colorScheme.error,
-                    )
-                }
-            } else null,
-        ) {
-            AnimatedTextLine(text = title)
-        }
-    }
+    )
 }
 
 @Composable
@@ -309,38 +308,27 @@ private fun VoicePickerSheet(
         if (picker == null) return@AppModalBottomSheet
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (voices.none { it.selectable }) {
-                AppText(
-                    text = stringResource(R.string.no_available_voices),
-                    style = LegadoTheme.typography.bodyMedium,
-                    color = LegadoTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 24.dp),
+                ReadAloudSettingsCard(
+                    title = stringResource(R.string.no_available_voices),
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier.heightIn(max = 480.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     items(
                         items = voices,
                         key = VoiceOptionUi::id,
                     ) { voice ->
-                        TinySettingItem(
+                        ReadAloudSettingsCard(
                             title = voice.name,
                             description = voiceDescription(voice),
                             enabled = voice.selectable,
-                            trailingContent = if (picker.selectedVoiceId == voice.id) {
-                                {
-                                    AppIcon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null,
-                                        tint = LegadoTheme.colorScheme.primary,
-                                    )
-                                }
-                            } else null,
+                            selected = picker.selectedVoiceId == voice.id,
                             onClick = { onIntent(BookVoiceCastingIntent.AssignVoice(voice.id)) },
                         )
                     }

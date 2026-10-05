@@ -5,7 +5,7 @@ import android.media.MediaPlayer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Save
@@ -49,6 +50,7 @@ import io.legado.app.domain.model.readaloud.CloudTtsProviderType
 import io.legado.app.domain.model.readaloud.MimoTtsCatalog
 import io.legado.app.domain.model.readaloud.ReadAloudVoice
 import io.legado.app.domain.model.readaloud.profile
+import io.legado.app.ui.book.readaloud.ReadAloudSettingsCard
 import io.legado.app.ui.theme.LegadoTheme
 import io.legado.app.ui.theme.adaptiveContentPadding
 import io.legado.app.ui.widget.components.AppFloatingActionButton
@@ -59,6 +61,7 @@ import io.legado.app.ui.widget.components.alert.AppAlertDialog
 import io.legado.app.ui.widget.components.button.series.MediumTonalButton
 import io.legado.app.ui.widget.components.filePicker.FilePickerSheet
 import io.legado.app.ui.widget.components.icon.AppIcons
+import io.legado.app.ui.widget.components.icon.AppIcon
 import io.legado.app.ui.widget.components.importComponents.BatchImportDialog
 import io.legado.app.ui.widget.components.importComponents.SourceInputDialog
 import io.legado.app.ui.widget.components.menuItem.RoundDropdownMenu
@@ -67,9 +70,8 @@ import io.legado.app.ui.widget.components.modalBottomSheet.AppModalBottomSheet
 import io.legado.app.ui.widget.components.modalBottomSheet.OptionCard
 import io.legado.app.ui.widget.components.modalBottomSheet.OptionSheet
 import io.legado.app.ui.widget.components.settingItem.SliderSettingItem
-import io.legado.app.ui.widget.components.settingItem.TinyClickableSettingItem
 import io.legado.app.ui.widget.components.settingItem.TinySwitchSettingItem
-import io.legado.app.ui.widget.components.tabRow.AppTabRow
+import io.legado.app.ui.widget.components.tabRow.CardTabRow
 import io.legado.app.ui.widget.components.text.AppText
 import io.legado.app.ui.widget.components.topbar.GlassMediumFlexibleTopAppBar
 import io.legado.app.ui.widget.components.topbar.GlassTopAppBarDefaults
@@ -79,6 +81,7 @@ import io.legado.app.utils.GSON
 import io.legado.app.utils.toastOnUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -93,7 +96,6 @@ fun CloudTtsScreen(
     val clipboard = LocalClipboard.current
     val pagerState =
         rememberPagerState(initialPage = state.selectedTab.ordinal) { CloudTtsTab.entries.size }
-    val pagerScope = rememberCoroutineScope()
     val voiceListState = rememberLazyListState()
     val engineListState = rememberLazyListState()
     var showAddEngineSheet by remember { mutableStateOf(false) }
@@ -132,10 +134,12 @@ fun CloudTtsScreen(
     }
     LaunchedEffect(pagerState) {
 
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            CloudTtsTab.entries.getOrNull(page)?.takeIf { it != state.selectedTab }
-                ?.let { onIntent(CloudTtsIntent.SelectTab(it)) }
-        }
+        snapshotFlow { pagerState.settledPage }
+            .distinctUntilChanged()
+            .collect { page ->
+                CloudTtsTab.entries.getOrNull(page)
+                    ?.let { onIntent(CloudTtsIntent.SelectTab(it)) }
+            }
     }
     val scrollBehavior = GlassTopAppBarDefaults.defaultScrollBehavior()
     AppScaffold(
@@ -182,7 +186,8 @@ fun CloudTtsScreen(
                 },
                 scrollBehavior = scrollBehavior,
                 bottomContent = {
-                    AppTabRow(
+                    CardTabRow(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         tabTitles = listOf(
                             stringResource(R.string.cloud_tts_voices_tab),
                             stringResource(R.string.cloud_tts_engines_tab),
@@ -190,9 +195,7 @@ fun CloudTtsScreen(
                         selectedTabIndex = state.selectedTab.ordinal,
                         onTabSelected = { page ->
                             onIntent(CloudTtsIntent.SelectTab(CloudTtsTab.entries[page]))
-                            pagerScope.launch { pagerState.animateScrollToPage(page) }
                         },
-                        isScrollable = false,
                     )
                 }
             )
@@ -234,11 +237,13 @@ fun CloudTtsScreen(
                         AppText(
                             text = stringResource(R.string.cloud_tts_voice_default_guide),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            style = LegadoTheme.typography.bodySmall,
+                            color = LegadoTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     if (state.voices.isEmpty() && !state.loading) {
                         item("voice-empty") {
-                            TinyClickableSettingItem(
+                            ReadAloudSettingsCard(
                                 title = stringResource(R.string.cloud_tts_no_saved_voices),
                                 description = stringResource(R.string.cloud_tts_open_engine_settings),
                                 onClick = {
@@ -248,49 +253,36 @@ fun CloudTtsScreen(
                         }
                     }
                     items(state.voices, key = { "voice:${it.id}" }) { voice ->
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = voice.title,
-                            description = listOf(
-                                voice.summary,
-                                when {
-                                    voice.selected -> stringResource(
-                                        R.string.cloud_tts_current_default_voice
-                                    )
-                                    voice.selectable -> stringResource(
-                                        R.string.cloud_tts_set_default_voice_hint
-                                    )
-                                    else -> null
-                                },
-                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            description = voice.summary,
+                            selected = voice.selected.takeIf { voice.selectable },
+                            detail = when {
+                                voice.selected -> stringResource(
+                                    R.string.cloud_tts_current_default_voice
+                                )
+                                voice.selectable -> stringResource(
+                                    R.string.cloud_tts_set_default_voice_hint
+                                )
+                                else -> null
+                            },
                             trailingContent = if (voice.editable) {
                                 {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                        MediumTonalButton(
-                                            onClick = {
-                                                onIntent(CloudTtsIntent.EditVoice(voice.id))
-                                            },
-                                            icon = Icons.Default.Edit,
-                                            contentDescription = stringResource(R.string.edit),
-                                        )
-                                        MediumTonalButton(
-                                            onClick = {
-                                                onIntent(
-                                                    CloudTtsIntent.RequestDeleteVoice(voice.id)
-                                                )
-                                            },
-                                            icon = Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.delete),
-                                        )
-                                    }
+                                    TtsItemActions(
+                                        onEdit = { onIntent(CloudTtsIntent.EditVoice(voice.id)) },
+                                        onDelete = {
+                                            onIntent(CloudTtsIntent.RequestDeleteVoice(voice.id))
+                                        },
+                                    )
                                 }
                             } else {
                                 null
                             },
-                            onClick = {
-                                if (voice.selectable) {
+                            onClick = if (voice.selectable) {
+                                {
                                     onIntent(CloudTtsIntent.SetDefaultVoice(voice.id))
                                 }
-                            },
+                            } else null,
                         )
                     }
                 } else {
@@ -298,35 +290,23 @@ fun CloudTtsScreen(
                         AppText(
                             text = stringResource(R.string.cloud_tts_engine_default_guide),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            style = LegadoTheme.typography.bodySmall,
+                            color = LegadoTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     item { EngineSectionTitle(R.string.cloud_tts_cloud_engines) }
                     items(state.engines, key = { "engine:${it.id}" }) { engine ->
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = engine.title,
-                            description = listOf(
-                                engine.summary,
-                                stringResource(
-                                    R.string.read_aloud_current_default_summary
-                                ).takeIf { engine.selected },
-                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            description = engine.summary,
+                            selected = engine.selected,
+                            detail = stringResource(R.string.read_aloud_current_default_summary)
+                                .takeIf { engine.selected },
                             trailingContent = {
-                                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    MediumTonalButton(
-                                        onClick = {
-                                            onIntent(CloudTtsIntent.EditEngine(engine.id))
-                                        },
-                                        icon = Icons.Default.Edit,
-                                        contentDescription = stringResource(R.string.edit),
-                                    )
-                                    MediumTonalButton(
-                                        onClick = {
-                                            onIntent(CloudTtsIntent.DeleteEngine(engine.id))
-                                        },
-                                        icon = Icons.Default.Delete,
-                                        contentDescription = stringResource(R.string.delete),
-                                    )
-                                }
+                                TtsItemActions(
+                                    onEdit = { onIntent(CloudTtsIntent.EditEngine(engine.id)) },
+                                    onDelete = { onIntent(CloudTtsIntent.DeleteEngine(engine.id)) },
+                                )
                             },
                             onClick = {
                                 onIntent(
@@ -340,14 +320,12 @@ fun CloudTtsScreen(
                     }
                     item { EngineSectionTitle(R.string.cloud_tts_http_engines) }
                     items(state.httpEngines, key = { "http:${it.engineId}" }) { engine ->
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = engine.title,
-                            description = listOf(
-                                engine.summary,
-                                stringResource(
-                                    R.string.read_aloud_current_default_summary
-                                ).takeIf { engine.selected },
-                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            description = engine.summary,
+                            selected = engine.selected,
+                            detail = stringResource(R.string.read_aloud_current_default_summary)
+                                .takeIf { engine.selected },
                             onClick = {
                                 onIntent(
                                     CloudTtsIntent.SetDefaultEngine(
@@ -360,35 +338,25 @@ fun CloudTtsScreen(
                                 { onIntent(CloudTtsIntent.OpenHttpTtsLogin(engine.engineId)) }
                             },
                             trailingContent = {
-                                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    MediumTonalButton(
-                                        onClick = {
-                                            onIntent(CloudTtsIntent.EditHttpTts(engine.engineId))
-                                        },
-                                        icon = Icons.Default.Edit,
-                                        contentDescription = stringResource(R.string.edit),
-                                    )
-                                    MediumTonalButton(
-                                        onClick = {
-                                            onIntent(CloudTtsIntent.DeleteHttpTts(engine.engineId))
-                                        },
-                                        icon = Icons.Default.Delete,
-                                        contentDescription = stringResource(R.string.delete),
-                                    )
-                                }
+                                TtsItemActions(
+                                    onEdit = {
+                                        onIntent(CloudTtsIntent.EditHttpTts(engine.engineId))
+                                    },
+                                    onDelete = {
+                                        onIntent(CloudTtsIntent.DeleteHttpTts(engine.engineId))
+                                    },
+                                )
                             },
                         )
                     }
                     item { EngineSectionTitle(R.string.cloud_tts_system_engines) }
                     items(state.systemEngines, key = { "system:${it.engineId}" }) { engine ->
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = engine.title,
-                            description = listOf(
-                                engine.summary,
-                                stringResource(
-                                    R.string.read_aloud_current_default_summary
-                                ).takeIf { engine.selected },
-                            ).filterNotNull().filter(String::isNotBlank).joinToString(" | "),
+                            description = engine.summary,
+                            selected = engine.selected,
+                            detail = stringResource(R.string.read_aloud_current_default_summary)
+                                .takeIf { engine.selected },
                             onClick = {
                                 onIntent(
                                     CloudTtsIntent.SetDefaultEngine(
@@ -519,6 +487,34 @@ fun CloudTtsScreen(
 }
 
 @Composable
+private fun TtsItemActions(
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        MediumTonalButton(
+            onClick = { expanded = true },
+            icon = Icons.Default.MoreVert,
+            contentDescription = stringResource(R.string.more_menu),
+        )
+        RoundDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            RoundDropdownMenuItem(
+                text = stringResource(R.string.edit),
+                leadingIcon = { AppIcon(Icons.Default.Edit, contentDescription = null) },
+                onClick = { expanded = false; onEdit() },
+            )
+            RoundDropdownMenuItem(
+                text = stringResource(R.string.delete),
+                leadingIcon = { AppIcon(Icons.Default.Delete, contentDescription = null) },
+                color = LegadoTheme.colorScheme.error,
+                onClick = { expanded = false; onDelete() },
+            )
+        }
+    }
+}
+
+@Composable
 private fun EngineSectionTitle(titleRes: Int) {
     AppText(
         text = stringResource(titleRes),
@@ -622,9 +618,8 @@ private fun HttpTtsEditorSheet(
         },
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
@@ -772,7 +767,9 @@ private fun CloudTtsEngineEditorContent(
         "token_sgp" to stringResource(R.string.mimo_tts_endpoint_token_sgp),
         "token_eu" to stringResource(R.string.mimo_tts_endpoint_token_eu),
     )
-    LazyColumn {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    ) {
         item {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -1028,9 +1025,10 @@ private fun TtsVoicePresetEditorContent(
     fun update(value: TtsVoicePresetEditorUi) = onIntent(CloudTtsIntent.UpdateVoiceEditor(value))
 
     LazyColumn(
-            Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
             if (editor.engineId.isNotBlank()) {
                 item {
                     EngineSectionTitle(R.string.cloud_tts_step_voice)
@@ -1040,9 +1038,7 @@ private fun TtsVoicePresetEditorContent(
                             onQueryChange = { voiceQuery = it },
                             placeholder = stringResource(R.string.cloud_tts_search_voice),
                             autoFocus = false,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                     if (state.discovering) {
@@ -1053,26 +1049,23 @@ private fun TtsVoicePresetEditorContent(
                 }
                 if (editor.editingVoiceId == null) {
                     items(filteredVoices, key = { it.id }) { voice ->
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = voice.label.substringBefore(" · "),
+                            selected = voice.id == editor.voiceId,
                             description = buildString {
                                 voice.label.substringAfter(" · ", "").takeIf(String::isNotBlank)?.let(::append)
                                 if (isNotEmpty()) append(" | ")
                                 append(voice.id)
-                                if (voice.id == editor.voiceId) {
-                                    append(" | ")
-                                    append(stringResource(R.string.cloud_tts_selected))
-                                }
                             },
                             onClick = { onIntent(CloudTtsIntent.SelectVoice(voice.id)) },
                         )
                     }
                 } else {
                     item {
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = editor.voiceName.ifBlank { editor.voiceId },
                             description = "${editor.voiceId} | ${stringResource(R.string.cloud_tts_current_voice)}",
-                            onClick = {},
+                            selected = true,
                         )
                     }
                 }
@@ -1204,10 +1197,16 @@ private fun MenuButton(
     text: String,
     onClick: () -> Unit,
 ) {
-    MediumTonalButton(
+    ReadAloudSettingsCard(
+        title = text,
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        text = text,
+        trailingContent = {
+            AppIcon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = null,
+                tint = LegadoTheme.colorScheme.onSurfaceVariant,
+            )
+        },
     )
 }
 
@@ -1229,12 +1228,15 @@ private fun VoiceEnginePickerSheet(
             )
         },
     ) {
-        LazyColumn(Modifier.fillMaxWidth()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        ) {
             items(
                 items = state.availableEngines,
                 key = { "picker:${it.engineType}:${it.engineId}" },
             ) { engine ->
-                TinyClickableSettingItem(
+                ReadAloudSettingsCard(
                     title = engine.title,
                     description = listOf(engine.summary, engine.catalogHint)
                         .filter(String::isNotBlank)

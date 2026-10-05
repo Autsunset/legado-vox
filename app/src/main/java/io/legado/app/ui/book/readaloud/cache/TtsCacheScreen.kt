@@ -1,6 +1,7 @@
 package io.legado.app.ui.book.readaloud.cache
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -16,13 +17,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.legado.app.R
+import io.legado.app.ui.book.readaloud.ReadAloudSettingsCard
 import io.legado.app.ui.theme.adaptiveContentPadding
 import io.legado.app.ui.widget.components.AppFloatingActionButton
 import io.legado.app.ui.widget.components.AppScaffold
 import io.legado.app.ui.widget.components.alert.AppAlertDialog
 import io.legado.app.ui.widget.components.log.LogDetailSheet
-import io.legado.app.ui.widget.components.settingItem.TinyClickableSettingItem
-import io.legado.app.ui.widget.components.tabRow.AppTabRow
+import io.legado.app.ui.widget.components.tabRow.CardTabRow
 import io.legado.app.ui.widget.components.topbar.GlassMediumFlexibleTopAppBar
 import io.legado.app.ui.widget.components.topbar.GlassTopAppBarDefaults
 import io.legado.app.ui.widget.components.topbar.TopBarNavigationButton
@@ -76,14 +77,14 @@ fun TtsCacheScreen(
                     TopBarNavigationButton(onClick = onBackClick)
                 },
                 bottomContent = {
-                    AppTabRow(
+                    CardTabRow(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         tabTitles = listOf(
                             stringResource(R.string.tts_cache_tab_files),
                             stringResource(R.string.tts_cache_tab_logs),
                         ),
                         selectedTabIndex = state.selectedTab.ordinal,
                         onTabSelected = { onIntent(TtsCacheIntent.SelectTab(TtsCacheTab.entries[it])) },
-                        isScrollable = false,
                     )
                 }
             )
@@ -110,18 +111,16 @@ fun TtsCacheScreen(
                     val sizeText = TtsCacheViewModel.formatSize(state.totalSizeBytes)
                     val countText =
                         stringResource(R.string.tts_cache_file_count, state.files.size)
-                    TinyClickableSettingItem(
+                    ReadAloudSettingsCard(
                         title = stringResource(R.string.tts_cache_total),
                         description = "$sizeText · $countText",
-                        onClick = {},
                     )
                 }
                 if (state.files.isEmpty() && !state.loading) {
                     item {
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = stringResource(R.string.tts_cache_empty),
                             description = stringResource(R.string.tts_cache_empty_summary),
-                            onClick = {},
                         )
                     }
                 }
@@ -131,7 +130,7 @@ fun TtsCacheScreen(
                     val displayText = file.text.ifEmpty {
                         stringResource(R.string.tts_cache_unknown_text)
                     }
-                    TinyClickableSettingItem(
+                    ReadAloudSettingsCard(
                         title = displayText,
                         description = "$sizeText · $dateText",
                         onClick = {
@@ -149,16 +148,15 @@ fun TtsCacheScreen(
             } else {
                 if (state.logs.isEmpty()) {
                     item {
-                        TinyClickableSettingItem(
+                        ReadAloudSettingsCard(
                             title = stringResource(R.string.tts_cache_logs_empty),
                             description = stringResource(R.string.tts_cache_logs_empty_summary),
-                            onClick = {},
                         )
                     }
                 }
                 items(state.logs, key = { "${it.timestamp}:${it.message.hashCode()}" }) { entry ->
                     val timeText = dateFormat.format(Date(entry.timestamp))
-                    TinyClickableSettingItem(
+                    ReadAloudSettingsCard(
                         title = timeText,
                         description = entry.message,
                         onClick = {

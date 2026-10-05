@@ -181,6 +181,10 @@ fun ReadBookRouteScreen(
         controller.onMenuVisibilityChanged(state.menuVisible)
     }
 
+    LaunchedEffect(controller, state.activeSheet == ReadBookSheet.ReadAloudConfig) {
+        controller.upSystemUiVisibility()
+    }
+
     LaunchedEffect(viewModel, controller, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.readAloudProgress.collect { chapterStart ->

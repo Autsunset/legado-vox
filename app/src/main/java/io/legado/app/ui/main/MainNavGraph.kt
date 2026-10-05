@@ -4,8 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -44,6 +47,7 @@ import io.legado.app.ui.book.import.local.ImportBookRouteScreen
 import io.legado.app.ui.book.import.remote.RemoteBookRouteScreen
 import io.legado.app.ui.book.info.BookInfoRouteScreen
 import io.legado.app.ui.book.info.BookInfoViewModel
+import io.legado.app.ui.book.readaloud.ReadAloudSettingsTheme
 import io.legado.app.ui.book.knowledge.BookCharacterDetailScreen
 import io.legado.app.ui.book.knowledge.BookCharacterDetailViewModel
 import io.legado.app.ui.book.knowledge.BookCharacterListScreen
@@ -135,6 +139,33 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+private fun AnimatedContentTransitionScope<*>.readAloudSettingsTransition(
+    isPop: Boolean,
+): ContentTransform {
+    val direction = if (isPop) {
+        AnimatedContentTransitionScope.SlideDirection.End
+    } else {
+        AnimatedContentTransitionScope.SlideDirection.Start
+    }
+    return (slideIntoContainer(
+        towards = direction,
+        animationSpec = tween(240, easing = LinearOutSlowInEasing),
+        initialOffset = { it / if (isPop) 24 else 12 },
+    ) + fadeIn(tween(180))) togetherWith (slideOutOfContainer(
+        towards = direction,
+        animationSpec = tween(240, easing = LinearOutSlowInEasing),
+        targetOffset = { it / if (isPop) 12 else 24 },
+    ) + fadeOut(tween(160)))
+}
+
+private val readAloudSettingsTransitions = NavDisplay.transitionSpec {
+    readAloudSettingsTransition(isPop = false)
+} + NavDisplay.popTransitionSpec {
+    readAloudSettingsTransition(isPop = true)
+} + NavDisplay.predictivePopTransitionSpec { _ ->
+    readAloudSettingsTransition(isPop = true)
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun MainActivity.mainEntryProvider(
@@ -1063,21 +1094,27 @@ fun MainActivity.mainEntryProvider(
         )
     }
 
-    entry<MainRouteBookVoiceCasting> { route ->
+    entry<MainRouteBookVoiceCasting>(
+        metadata = readAloudSettingsTransitions,
+    ) { route ->
         val viewModel = koinViewModel<BookVoiceCastingViewModel>(
             key = "BookVoiceCasting:${route.bookUrl}",
             parameters = { parametersOf(route.bookUrl) },
         )
-        BookVoiceCastingRouteScreen(
-            state = viewModel.uiState.collectAsStateWithLifecycle().value,
-            onIntent = viewModel::onIntent,
-            effects = viewModel.effects,
-            onBack = { onNavigateBack() },
-            onManageCloudTts = { onNavigateToRoute(MainRouteCloudTtsEngines(route.bookUrl)) },
-        )
+        ReadAloudSettingsTheme {
+            BookVoiceCastingRouteScreen(
+                state = viewModel.uiState.collectAsStateWithLifecycle().value,
+                onIntent = viewModel::onIntent,
+                effects = viewModel.effects,
+                onBack = { onNavigateBack() },
+                onManageCloudTts = { onNavigateToRoute(MainRouteCloudTtsEngines(route.bookUrl)) },
+            )
+        }
     }
 
-    entry<MainRouteCloudTtsEngines> { route ->
+    entry<MainRouteCloudTtsEngines>(
+        metadata = readAloudSettingsTransitions,
+    ) { route ->
         val viewModel = koinViewModel<CloudTtsViewModel>()
         LaunchedEffect(route.bookUrl) {
             viewModel.onIntent(CloudTtsIntent.SetBookContext(route.bookUrl))
@@ -1108,18 +1145,24 @@ fun MainActivity.mainEntryProvider(
                 }
             }
         }
-        CloudTtsScreen(
-            state = viewModel.uiState.collectAsStateWithLifecycle().value,
-            onIntent = viewModel::onIntent,
-            effects = viewModel.effects,
-            onBack = { onNavigateBack() },
-        )
+        ReadAloudSettingsTheme {
+            CloudTtsScreen(
+                state = viewModel.uiState.collectAsStateWithLifecycle().value,
+                onIntent = viewModel::onIntent,
+                effects = viewModel.effects,
+                onBack = { onNavigateBack() },
+            )
+        }
     }
 
-    entry<MainRouteTtsCache> {
-        TtsCacheRouteScreen(
-            onBackClick = { onNavigateBack() },
-        )
+    entry<MainRouteTtsCache>(
+        metadata = readAloudSettingsTransitions,
+    ) {
+        ReadAloudSettingsTheme {
+            TtsCacheRouteScreen(
+                onBackClick = { onNavigateBack() },
+            )
+        }
     }
 
     entry<MainRouteBookKnowledgeList> { route ->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_casting_rules_title">角色匹配规则</string>
+    <string name="voice_casting_rules_entry_summary">编辑角色匹配规则，或导入、导出规则文件</string>
+    <string name="voice_casting_rules_summary">按数组顺序优先匹配。character 填角色名，pattern 填正则；afterDialogue 为 true 时匹配对话后的旁白；enabled 控制启停。未命中沿用默认识别。</string>
+    <string name="voice_casting_rules_example">例如：[{\"character\":\"张三\",\"pattern\":\"小张.*笑道\",\"afterDialogue\":false,\"enabled\":true}]</string>
+    <string name="voice_casting_rules_json">规则 JSON</string>
+    <string name="voice_casting_export_saved_rules">导出已保存规则</string>
+</resources>

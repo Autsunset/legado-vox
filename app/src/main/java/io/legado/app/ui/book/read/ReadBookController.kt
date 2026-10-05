@@ -285,14 +285,16 @@ class ReadBookController(
     @SuppressLint("WrongConstant")
     override fun upSystemUiVisibility(isInMultiWindow: Boolean, toolBarHide: Boolean) {
         val window = activity.window
+        val hideReaderBars = toolBarHide &&
+            viewModel.uiState.value.activeSheet != ReadBookSheet.ReadAloudConfig
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.run {
-                if (toolBarHide && ReadBookConfig.hideNavigationBar) {
+                if (hideReaderBars && ReadBookConfig.hideNavigationBar) {
                     hide(WindowInsets.Type.navigationBars())
                 } else {
                     show(WindowInsets.Type.navigationBars())
                 }
-                if (toolBarHide && ReadBookConfig.hideStatusBar) {
+                if (hideReaderBars && ReadBookConfig.hideStatusBar) {
                     hide(WindowInsets.Type.statusBars())
                 } else {
                     show(WindowInsets.Type.statusBars())
@@ -309,16 +311,16 @@ class ReadBookController(
         }
         if (ReadBookConfig.hideNavigationBar) {
             flag = flag or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            if (toolBarHide) {
+            if (hideReaderBars) {
                 flag = flag or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             }
         }
-        if (ReadBookConfig.hideStatusBar && toolBarHide) {
+        if (ReadBookConfig.hideStatusBar && hideReaderBars) {
             flag = flag or View.SYSTEM_UI_FLAG_FULLSCREEN
         }
         window.decorView.systemUiVisibility = flag
 
-        if (toolBarHide) {
+        if (hideReaderBars) {
             activity.setLightStatusBar(ReadBookConfig.durConfig.curStatusIconDark())
         } else {
             activity.setLightStatusBar(ColorUtils.isColorLight(ReadBookConfig.resolvedMenuBgColor))
