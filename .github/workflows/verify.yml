@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload unit test reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: verify-unit-test-reports
           if-no-files-found: warn
@@ -65,7 +65,7 @@ jobs:
 
       - name: Upload lint reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: verify-lint-reports
           if-no-files-found: warn
