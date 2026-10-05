@@ -62,6 +62,7 @@
 # 数据类
 -keep class **.data.entities.**{*;}
 # Gson反序列化用的数据传输类
+-keep class io.legado.app.help.readaloud.resolve.SpeakerMatchRule { *; }
 -keep class io.legado.app.model.translation.**{*;}
 -keep class io.legado.app.domain.model.DictPair{*;}
 -keep class io.legado.app.domain.model.BookDictionary{*;}
