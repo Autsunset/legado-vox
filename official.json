@@ -1,49 +1,59 @@
 {
-  "tag_name": "1.1.1",
-  "name": "阅读 Vox 1.1.1 · 听书规则与缓冲优化",
-  "body": "阅读 Vox 1.1.1 同步 VoxEngine #7–#9 的听书改进。\n\n- **角色匹配规则**：人物配音页可以编辑正则规则，支持对话前/后旁白、规则启停，以及 JSON 文件导入导出。未命中沿用默认识别，人工锁定的人物标注保持优先。\n- **段落上下文**：MiMo 可利用前后段落理解情绪与语气，上下文与朗读正文分开传入；开关在朗读设置中。\n- **持续缓冲**：当前章节按字数预算提前并行准备音频，段间停顿保留在途请求，避免反复取消重合成；当前章准备好后才预缓存后续章节。\n- **缓存设置修复**：预加载章数实际控制音频预缓存，可选后续 0–100 章；新增提前缓冲页数和单次合成上限 180–1800 字。\n- **失败与文件完整性**：当前段合成失败会暂停并允许重试，预合成失败不会保存成静音；云端/HTTP 音频完整写入后才供播放使用。\n\n提前缓冲每页按 600 字估算。多章音频预缓存需要正文已缓存到本地，并遵循音频缓存保留时间。修改合成参数后请重新开始听书；实际情绪表现与请求耗时取决于所选服务和音色。\n\n验证：600 项 JVM 测试、lint、配置架构检查和 Debug 构建通过；Android 16 容器安装及启动验证通过。\n\n下载：多数现代设备选择 arm64-v8a，不确定架构时选择 universal，旧 32 位 ARM 设备选择 armeabi-v7a。\n\n最低支持 Android 8.0，沿用 1.0.0 发布签名，可直接升级。文件哈希见 SHA256SUMS.txt。\n",
+  "tag_name": "1.1.2",
+  "name": "阅读 Vox 1.1.2 · 图标与朗读设置焕新",
+  "body": "阅读 Vox 1.1.2：阅读主题图标与朗读设置界面统一。\n\n## 更新内容\n\n- 更换阅读主题的默认图标，保留原图作为备选，适配圆形启动器和 Android 单色主题图标。\n- 统一“默认引擎与音色”“朗读缓存”“人物与角色配音”及相关编辑弹层的圆角卡片、字体、间距与布局；长说明支持换行。\n- 子页面继承阅读菜单的配色与字体，不再切换到另一套默认主题。\n- 朗读设置与子页在同一窗口内切换，使用 240ms 短距离滑动与淡入淡出，去掉明显缩放，解决弹窗遮住导航动画后突然跳出的情况。\n- 返回后保留原来的设置标签及播放器返回上下文。\n\n朗读合成、试听、配音规则和配置导入导出逻辑保持不变。“系统 TTS 设置”仍由 Android 系统提供。\n\n## 验证\n\n- 603 项应用 JVM 测试全部通过，Release lint 按现有基线通过，配置架构检查通过。\n- 三种 Release APK 均启用 R8、使用正式签名，非 Debug 包。\n- Android 15（API 35）模拟器验证：从已发布的 1.1.1 覆盖升级到 1.1.2，测试书籍与首次设置状态保留；正式签名 R8 包的设置子页及返回恢复检查通过。\n\n## 下载与升级\n\n- arm64-v8a：多数现代 ARM 手机。\n- universal：不确定架构时选择。\n- armeabi-v7a：旧 32 位 ARM 设备。\n\n最低支持 Android 8.0。沿用 1.0.0 / 1.1.1 的正式发布签名，可直接覆盖升级，无需卸载；升级前仍建议备份。\n\nAPK 校验值见 SHA256SUMS.txt。mapping.txt.gz 为本版 R8 堆栈还原文件，普通用户无需下载。\n",
   "prerelease": false,
-  "created_at": "2026-10-05T02:15:29Z",
+  "created_at": "2026-10-05T10:16:50Z",
   "assets": [
     {
-      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.1/legado-vox-1.1.1-arm64-v8a.apk",
+      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.2/legado-vox-1.1.2-arm64-v8a.apk",
       "content_type": "application/vnd.android.package-archive",
-      "created_at": "2026-10-05T02:38:49Z",
-      "download_count": 0,
-      "id": 611275149,
-      "name": "legado-vox-1.1.1-arm64-v8a.apk",
+      "created_at": "2026-10-05T10:20:23Z",
+      "id": 612220783,
+      "name": "legado-vox-1.1.2-arm64-v8a.apk",
       "state": "uploaded",
-      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/611275149"
+      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/612220783",
+      "download_count": 0
     },
     {
-      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.1/legado-vox-1.1.1-armeabi-v7a.apk",
+      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.2/legado-vox-1.1.2-armeabi-v7a.apk",
       "content_type": "application/vnd.android.package-archive",
-      "created_at": "2026-10-05T02:38:49Z",
-      "download_count": 0,
-      "id": 611275146,
-      "name": "legado-vox-1.1.1-armeabi-v7a.apk",
+      "created_at": "2026-10-05T10:20:23Z",
+      "id": 612220789,
+      "name": "legado-vox-1.1.2-armeabi-v7a.apk",
       "state": "uploaded",
-      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/611275146"
+      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/612220789",
+      "download_count": 0
     },
     {
-      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.1/legado-vox-1.1.1-universal.apk",
+      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.2/legado-vox-1.1.2-universal.apk",
       "content_type": "application/vnd.android.package-archive",
-      "created_at": "2026-10-05T02:38:49Z",
-      "download_count": 0,
-      "id": 611275150,
-      "name": "legado-vox-1.1.1-universal.apk",
+      "created_at": "2026-10-05T10:20:23Z",
+      "id": 612220787,
+      "name": "legado-vox-1.1.2-universal.apk",
       "state": "uploaded",
-      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/611275150"
+      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/612220787",
+      "download_count": 0
     },
     {
-      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.1/SHA256SUMS.txt",
+      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.2/mapping.txt.gz",
+      "content_type": "application/gzip",
+      "created_at": "2026-10-05T10:20:23Z",
+      "id": 612220782,
+      "name": "mapping.txt.gz",
+      "state": "uploaded",
+      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/612220782",
+      "download_count": 0
+    },
+    {
+      "browser_download_url": "https://github.com/Autsunset/legado-vox/releases/download/1.1.2/SHA256SUMS.txt",
       "content_type": "text/plain; charset=utf-8",
-      "created_at": "2026-10-05T02:38:49Z",
-      "download_count": 0,
-      "id": 611275147,
+      "created_at": "2026-10-05T10:20:23Z",
+      "id": 612220788,
       "name": "SHA256SUMS.txt",
       "state": "uploaded",
-      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/611275147"
+      "url": "https://api.github.com/repos/Autsunset/legado-vox/releases/assets/612220788",
+      "download_count": 0
     }
   ]
 }
