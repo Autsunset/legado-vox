@@ -5,6 +5,27 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ReadAloudPlaybackQueueTest {
+    @Test
+    fun `shuffled plan remains in chapter order after chunking with context separate from speech`() {
+        val before = "他打开房门。"
+        val dialogue = "“不要走。”".repeat(40)
+        val after = "她转身离开。"
+        val queue = ReadAloudPlaybackQueue.from(
+            listOf(
+                item(after, before.length + dialogue.length, 2),
+                item(dialogue, before.length, 1, SpeechRoleType.Character),
+                item(before, 0, 0),
+            ),
+            180,
+        )
+
+        assertEquals(before + dialogue + after, queue.cues.joinToString("") { it.text })
+        queue.cues.zipWithNext().forEach { (left, right) ->
+            assertEquals(left.chapterEnd, right.chapterStart)
+        }
+        assertEquals(listOf(0, 1, 1, 2), queue.cues.map { it.paragraphIndex })
+    }
+
     @Test fun `long cues split without losing offsets roles or paragraph context`() {
         val text = "她说。".repeat(100) + "😀结尾。"
         val chunks = ReadAloudPlaybackQueue.from(listOf(item("她含泪。", 0, 0), item(text, 5, 1, SpeechRoleType.Character), item("他转身。", 5 + text.length, 2)), 180).cues

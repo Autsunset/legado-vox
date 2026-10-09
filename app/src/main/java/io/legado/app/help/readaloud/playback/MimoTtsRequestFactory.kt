@@ -2,8 +2,10 @@ package io.legado.app.help.readaloud.playback
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import io.legado.app.domain.model.readaloud.CloudTtsProviderType
 import io.legado.app.domain.model.readaloud.MimoTtsCatalog
 import io.legado.app.domain.model.readaloud.MimoTtsOptions
+import io.legado.app.help.readaloud.segment.SpeechEmotionDetector
 
 internal object MimoTtsRequestFactory {
     fun build(
@@ -15,10 +17,14 @@ internal object MimoTtsRequestFactory {
         options: MimoTtsOptions,
         context: String = "",
     ): String {
-        val contextInstruction = context.takeIf(String::isNotBlank)?.let {
-            "以下小说上下文仅供理解人物情绪与语气，不要朗读或复述。只朗读 assistant 消息中的正文。\n<上下文>\n${it.take(1200)}\n</上下文>"
-        }.orEmpty()
-        val directions = listOf(instructions, style, contextInstruction)
+        // Raw neighboring prose can leak into generated audio even with "do not read" prompts.
+        val contextStyle = if (style.isBlank() && context.isNotBlank()) {
+            CloudTtsEmotionMapper.map(
+                CloudTtsProviderType.Mimo,
+                SpeechEmotionDetector.detect(speechText, context).storageValue,
+            ).style
+        } else ""
+        val directions = listOf(instructions, style, contextStyle)
             .map(String::trim)
             .filter { it.isNotBlank() && it != NO_STYLE }
             .joinToString("。")

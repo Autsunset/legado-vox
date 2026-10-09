@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.3
+
+- Prevent MiMo read-aloud synthesis from including neighboring prose or context labels in generated audio.
+- Reduce paragraph context to local emotion hints while preserving the original speech text and selected style.
+- Respect disabled automatic emotion and invalidate audio cached with the old context prompts.
+- Add regression coverage for request isolation, HTTP synthesis requests, and chapter playback order.
+
 ## 1.1.2
 
 - Replace the default launcher icon with reading-themed artwork and retain the supplied portrait as an alternative.

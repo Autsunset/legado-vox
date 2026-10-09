@@ -81,7 +81,7 @@ class CloudTtsAudioSynthesizer(
             engine = engine,
             request = CloudTtsSynthesisRequest(
                 text = text,
-                context = context,
+                context = context.takeIf { config.automaticEmotion != false }.orEmpty(),
                 voiceId = voice.speakerId,
                 locale = config.locale,
                 style = mappedStyle ?: config.style,

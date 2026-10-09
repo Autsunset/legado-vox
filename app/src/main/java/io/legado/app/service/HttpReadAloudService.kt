@@ -907,7 +907,7 @@ class HttpReadAloudService : BaseReadAloudService(),
                 "system:${routedVoice.id}:${routedVoice.revision}:${routedVoice.engineId}:${routedVoice.speakerId}"
 
             ReadAloudVoice.ENGINE_CLOUD ->
-                "cloud:context-v1:${MD5Utils.md5Encode16(cue?.context.orEmpty().takeIf { readAloudSettings.ttsContextEnabled }.orEmpty())}:${routedVoice.id}:${routedVoice.revision}:" +
+                "cloud:context-v2:${MD5Utils.md5Encode16(cue?.context.orEmpty().takeIf { readAloudSettings.ttsContextEnabled }.orEmpty())}:${routedVoice.id}:${routedVoice.revision}:" +
                         "${CloudTtsEmotionMapper.VERSION}:$cueEmotion:" +
                         "${CharacterPerformanceInstructionBuilder.VERSION}:" +
                         "${characterPerformance?.characterId.orEmpty()}:" +

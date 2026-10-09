@@ -50,6 +50,7 @@ class MimoCloudTtsProviderHttpTest {
                 ),
                 request = CloudTtsSynthesisRequest(
                     text = "他说：【你好。】",
+                    context = "前一句：她哭喊着。后一句：他转身离开。",
                     voiceId = "茉莉",
                     style = "开心",
                     instructions = "温柔地朗读",
@@ -70,6 +71,9 @@ class MimoCloudTtsProviderHttpTest {
             val messages = json.getAsJsonArray("messages")
             assertEquals("温柔地朗读。开心", messages[0].asJsonObject["content"].asString)
             assertEquals("他说：“你好。”", messages[1].asJsonObject["content"].asString)
+            assertFalse(request.body.contains("上下文"))
+            assertFalse(request.body.contains("她哭喊着"))
+            assertFalse(request.body.contains("他转身离开"))
         } finally {
             server.stop(0)
         }
