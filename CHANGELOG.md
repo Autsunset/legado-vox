@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.4
+
+- Recognize short quoted replies after explicit speech cues as character dialogue.
+- Preserve narration for short quoted terms without an immediate speech cue.
+- Invalidate cached chapter segmentation so existing books benefit from the correction.
+- Add regression coverage for short replies, quote styles, and false-positive prevention.
+
 ## 1.1.3
 
 - Prevent MiMo read-aloud synthesis from including neighboring prose or context labels in generated audio.

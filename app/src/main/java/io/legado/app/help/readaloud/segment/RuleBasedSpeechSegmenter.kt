@@ -12,7 +12,7 @@ import io.legado.app.domain.model.readaloud.SpeechSegmentDraft
  */
 object RuleBasedSpeechSegmenter {
 
-    const val VERSION = "rule-segmenter-v2-emotion"
+    const val VERSION = "rule-segmenter-v3-short-dialogue"
 
     private val quotePairs = mapOf(
         '“' to '”',
@@ -136,6 +136,8 @@ object RuleBasedSpeechSegmenter {
     private fun quoteRole(text: String, openIndex: Int, closeIndex: Int): SpeechRoleType {
         val contextBefore = text.substring((openIndex - 24).coerceAtLeast(0), openIndex)
         if (thoughtCueRegex.containsMatchIn(contextBefore)) return SpeechRoleType.Thought
+        val speechCue = contextBefore.trimEnd { it.isWhitespace() || it in "，,：:" }
+        if (speechCueRegex.containsMatchIn(speechCue)) return SpeechRoleType.Character
         if (closeIndex < 0) return SpeechRoleType.Character
         val inner = text.substring(openIndex + 1, closeIndex).trim()
         return if (inner.length >= 6 || inner.any(sentencePunctuation::contains)) {

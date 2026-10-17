@@ -36,6 +36,32 @@ class RuleBasedSpeechSegmenterTest {
     }
 
     @Test
+    fun `recognizes short replies after an explicit speech cue`() {
+        for (text in listOf("张三说道：“好”", "她低声道：「嗯」", "他问 \"为什么\"")) {
+            val paragraph = paragraph(0, text)
+
+            val result = RuleBasedSpeechSegmenter.segment(listOf(paragraph))
+
+            assertEquals(
+                text,
+                listOf(SpeechRoleType.Narrator, SpeechRoleType.Character),
+                result.map { it.roleType },
+            )
+            assertCoverage(listOf(paragraph), result)
+        }
+    }
+
+    @Test
+    fun `an earlier speech verb does not turn quoted terms into dialogue`() {
+        val paragraph = paragraph(0, "他说过的那把剑名为“青锋”。")
+
+        val result = RuleBasedSpeechSegmenter.segment(listOf(paragraph))
+
+        assertEquals(listOf(SpeechRoleType.Narrator), result.map { it.roleType })
+        assertCoverage(listOf(paragraph), result)
+    }
+
+    @Test
     fun `recognizes quoted thought from local cue`() {
         val paragraph = paragraph(0, "她心想：“这件事绝不能让他知道。”")
 
