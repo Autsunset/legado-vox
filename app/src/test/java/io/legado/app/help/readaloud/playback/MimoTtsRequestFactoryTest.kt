@@ -96,6 +96,41 @@ class MimoTtsRequestFactoryTest {
     }
 
     @Test
+    fun `preset and clone requests put Cantonese tags before the speech text`() {
+        val text = "你今日想食啲咩呀？"
+        for (model in listOf(MimoTtsCatalog.MODEL_PRESET, MimoTtsCatalog.MODEL_CLONE)) {
+            for (style in listOf("粤语", "  粵語  ")) {
+                val json = JsonParser.parseString(MimoTtsRequestFactory.build(
+                    model, "voice", text, style, "温柔地朗读", MimoTtsOptions(), "她哭喊着。"
+                )).asJsonObject
+                val messages = json.getAsJsonArray("messages")
+
+                assertEquals("user", messages[0].asJsonObject["role"].asString)
+                assertEquals("温柔地朗读", messages[0].asJsonObject["content"].asString)
+                assertEquals("assistant", messages[1].asJsonObject["role"].asString)
+                assertEquals("(粤语)$text", messages[1].asJsonObject["content"].asString)
+                assertEquals("voice", json.getAsJsonObject("audio")["voice"].asString)
+            }
+        }
+    }
+
+    @Test
+    fun `voice design and free form directions do not add dialect tags`() {
+        val text = "你好。"
+        val design = JsonParser.parseString(MimoTtsRequestFactory.build(
+            MimoTtsCatalog.MODEL_DESIGN, "音色描述", text, "粤语", "", MimoTtsOptions()
+        )).asJsonObject.getAsJsonArray("messages")
+        val custom = JsonParser.parseString(MimoTtsRequestFactory.build(
+            MimoTtsCatalog.MODEL_PRESET, "冰糖", text, "用温柔的粤语慢慢朗读", "", MimoTtsOptions()
+        )).asJsonObject.getAsJsonArray("messages")
+
+        assertEquals("音色描述。粤语", design[0].asJsonObject["content"].asString)
+        assertEquals(text, design[1].asJsonObject["content"].asString)
+        assertEquals("用温柔的粤语慢慢朗读", custom[0].asJsonObject["content"].asString)
+        assertEquals(text, custom[1].asJsonObject["content"].asString)
+    }
+
+    @Test
     fun `no style is not sent as a spoken direction`() {
         val json = JsonParser.parseString(
             MimoTtsRequestFactory.build(

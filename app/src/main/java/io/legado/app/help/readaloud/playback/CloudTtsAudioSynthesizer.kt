@@ -15,10 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
-class CloudTtsAudioSynthesizer(
+class CloudTtsAudioSynthesizer internal constructor(
     private val engineGateway: CloudTtsEngineGateway,
+    private val registry: CloudTtsProviderRegistry,
 ) {
-    private val registry = CloudTtsProviderRegistry()
+    constructor(engineGateway: CloudTtsEngineGateway) : this(engineGateway, CloudTtsProviderRegistry())
+
     private val mimoThrottle = CloudTtsRequestThrottle()
 
     suspend fun fetchVoices(engineId: String): List<CloudTtsVoiceDescriptor> =
@@ -53,9 +55,7 @@ class CloudTtsAudioSynthesizer(
     ): Boolean = withContext(Dispatchers.IO) {
         val engine = engineGateway.get(voice.engineId) ?: return@withContext false
         if (!engine.enabled) return@withContext false
-        val config = runCatching {
-            GSON.fromJson(voice.traitsJson, CloudTtsVoiceConfig::class.java)
-        }.getOrNull() ?: CloudTtsVoiceConfig()
+        val config = voice.cloudConfig()
         val supportedStyles = runCatching {
             GSON.fromJson(voice.emotionCatalogJson, Array<String>::class.java).toSet()
         }.getOrDefault(emptySet())
@@ -65,6 +65,9 @@ class CloudTtsAudioSynthesizer(
             CloudTtsEmotionControl()
         }
         val mappedStyle = emotionControl.style.takeIf { it in supportedStyles }
+        val dialect = if (engine.provider == CloudTtsProviderType.Mimo) {
+            MimoTtsRequestFactory.dialectTag(config.style, engine.model)
+        } else null
         val characterInstruction = if (config.characterPersonality != false) {
             CharacterPerformanceInstructionBuilder.build(engine.provider, characterPerformance)
         } else ""
@@ -76,6 +79,7 @@ class CloudTtsAudioSynthesizer(
             characterInstruction.takeIf(String::isNotBlank),
             roleInstruction.takeIf(String::isNotBlank),
             emotionControl.instruction.takeIf(String::isNotBlank),
+            mappedStyle?.takeIf { dialect != null },
         ).joinToString(" ")
         synthesizeToFile(
             engine = engine,
@@ -84,7 +88,7 @@ class CloudTtsAudioSynthesizer(
                 context = context.takeIf { config.automaticEmotion != false }.orEmpty(),
                 voiceId = voice.speakerId,
                 locale = config.locale,
-                style = mappedStyle ?: config.style,
+                style = dialect ?: mappedStyle ?: config.style,
                 role = config.role,
                 instructions = instructions,
                 speed = if (engine.provider == CloudTtsProviderType.Mimo) {
@@ -132,5 +136,14 @@ class CloudTtsAudioSynthesizer(
             if (!temporary.renameTo(output)) error("无法保存音频缓存")
         } finally { temporary.delete() }
         return output.length() > 0
+    }
+
+    companion object {
+        internal fun cacheKeySuffix(voice: ReadAloudVoice): String =
+            if (MimoTtsRequestFactory.dialectTag(voice.cloudConfig().style) == null) "" else ":mimo-dialect-v1"
+
+        private fun ReadAloudVoice.cloudConfig(): CloudTtsVoiceConfig = runCatching {
+            GSON.fromJson(traitsJson, CloudTtsVoiceConfig::class.java)
+        }.getOrNull() ?: CloudTtsVoiceConfig()
     }
 }

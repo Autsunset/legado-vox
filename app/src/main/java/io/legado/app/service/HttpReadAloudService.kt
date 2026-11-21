@@ -913,7 +913,8 @@ class HttpReadAloudService : BaseReadAloudService(),
                         "${characterPerformance?.characterId.orEmpty()}:" +
                         "${characterPerformance?.updatedAt.orZero()}:" +
                         "${CloudTtsRoleInstructionMapper.VERSION}:" +
-                        cueRoleType.storageValue
+                        cueRoleType.storageValue +
+                        CloudTtsAudioSynthesizer.cacheKeySuffix(routedVoice)
 
             else -> {
                 val itemHttpTts = routedVoice.engineId.toLongOrNull()

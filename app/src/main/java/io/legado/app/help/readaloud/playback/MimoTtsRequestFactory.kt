@@ -8,6 +8,15 @@ import io.legado.app.domain.model.readaloud.MimoTtsOptions
 import io.legado.app.help.readaloud.segment.SpeechEmotionDetector
 
 internal object MimoTtsRequestFactory {
+    fun dialectTag(style: String?, model: String = MimoTtsCatalog.MODEL_PRESET): String? {
+        if (model == MimoTtsCatalog.MODEL_DESIGN) return null
+        return when (val dialect = style?.trim()) {
+            "粤语", "粵語" -> "粤语"
+            "四川话", "东北话", "河南话" -> dialect
+            else -> null
+        }
+    }
+
     fun build(
         model: String,
         voice: String,
@@ -17,6 +26,7 @@ internal object MimoTtsRequestFactory {
         options: MimoTtsOptions,
         context: String = "",
     ): String {
+        val dialect = dialectTag(style, model)
         // Raw neighboring prose can leak into generated audio even with "do not read" prompts.
         val contextStyle = if (style.isBlank() && context.isNotBlank()) {
             CloudTtsEmotionMapper.map(
@@ -24,7 +34,7 @@ internal object MimoTtsRequestFactory {
                 SpeechEmotionDetector.detect(speechText, context).storageValue,
             ).style
         } else ""
-        val directions = listOf(instructions, style, contextStyle)
+        val directions = listOf(instructions, style.takeIf { dialect == null }.orEmpty(), contextStyle)
             .map(String::trim)
             .filter { it.isNotBlank() && it != NO_STYLE }
             .joinToString("。")
@@ -37,7 +47,7 @@ internal object MimoTtsRequestFactory {
             messages.add(message("assistant", speechText))
         } else {
             messages.add(message("user", directions))
-            messages.add(message("assistant", speechText))
+            messages.add(message("assistant", dialect?.let { "($it)$speechText" } ?: speechText))
             audio.addProperty("voice", voice)
         }
         return JsonObject().apply {
