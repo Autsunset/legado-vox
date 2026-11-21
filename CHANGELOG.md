@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.5
+
+- Send Cantonese styles as MiMo dialect tags instead of plain instructions.
+- Preserve the selected dialect when automatic emotion is enabled.
+- Bypass audio cached before the dialect fix without invalidating other voices.
+
 ## 1.1.4
 
 - Recognize short quoted replies after explicit speech cues as character dialogue.
